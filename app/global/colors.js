@@ -5,5 +5,8 @@
      grey:"#bbbbbb",
      grey_select:"#aaaaaa",
      grey_important:"#505050",
-     grey_hover:"#888888"
+     grey_hover:"#888888",
+
+     bigFontSize:80,
+     smallFontSize:40
  }
