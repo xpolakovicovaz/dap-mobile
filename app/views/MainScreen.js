@@ -1,8 +1,11 @@
 import React from 'react';
 import {StyleSheet, View, Text, Pressable, Image} from 'react-native'
+
+
 import colors from '../global/colors';
 
-function MainScreen(props) {
+function MainScreen({navigation}) {
+    console.log("MainScreen start");
     return (
         <View style={styles.background}>
             <View style={styles.textBox}>
@@ -11,7 +14,7 @@ function MainScreen(props) {
                 <Text style={styles.smallText}>dni</Text>
             </View>
             <View style={styles.buttonBox}>
-                <Pressable style={styles.buttonS} >
+                <Pressable style={styles.buttonS} onPress={()=>navigation.navigate("Settings")}>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/gear.png")}/>
                 </Pressable>
                 <Pressable style={styles.buttonS}>
@@ -27,7 +30,6 @@ background:{
     flex:1,
     backgroundColor:colors.background,
     color:colors.grey,
-        backgroundColor:colors.background,
     borderWidth:1,
     borderColor:colors.grey
 },
