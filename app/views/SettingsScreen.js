@@ -1,39 +1,192 @@
 import React from 'react';
-import {View, Text, TextInput, StyleSheet, Pressable, Image } from 'react-native';
+import {View, Text, TextInput, StyleSheet, Pressable, Image, Alert } from 'react-native';
 
 import colors from '../global/colors';
+import {GetDb} from '../db/dbController';
 
-function SettingsScreen(props) {
+
+let cycle_length = 0;
+let ovulation_length = 0;
+let ovulation_start = 0;
+let period_length = 0;
+let saves = 0;
+/*
+function setItems(array)
+{ 
+    console.log("in set items ");
+    array.map(({id, value})=> 
+{
+    switch(id)
+    {
+        case "cycle_length":
+            cycle_length = value; break;
+        case "ovulation_length":
+            ovulation_length = value; break;
+        case "ovulation_start":
+            ovulation_start = value; break;
+        case "period_length":
+            period_length = value; break;
+    }
+});
+console.log("cycle_length " + cycle_length);
+console.log("ovulation_length " + ovulation_length);
+console.log("ovulation_start " + ovulation_start);
+console.log("period_length " + period_length);
+React.useState(null);
+}
+
+function loadItems()
+{ console.log("loading db ")
+let a = GetDb();
+console.log("db" + a);
+    React.useEffect(()=>{
+        a.transaction((tx)=>{
+            tx.executeSql("select * from sett",//sql
+                [], //sql args
+                (_, { rows:{ _array} }) =>{//callback function
+                setItems(_array)
+                },
+                error=>{//error function
+                    console.log("ERROR - openDatabase - "+ error)
+                }
+            );            
+        })
+    });
+    console.log("loaing - end")
+}
+*/
+const SettingsScreen = ({navigation}) => {
+//function SettingsScreen (props){
+    const [items, setItems] = React.useState(null);
+    let db = GetDb();
+    console.log(db)
+
+    //if (period_length == 0)
+    { 
+        console.log("loading db again ")
+
+                React.useEffect(()=>{
+                    db.transaction((tx)=>{
+                        tx.executeSql("select * from sett",//sql
+                            [], //sql args
+                            (_, { rows:{ _array} }) =>{//callback function
+                             //   console.log('db data res ------>', _array)
+                                _array.map(({id, value})=> 
+                                {
+                                    switch(id)
+                                    {
+                                        case "cycle_length":
+                                            cycle_length = value; break;
+                                        case "ovulation_length":
+                                            ovulation_length = value; break;
+                                        case "ovulation_start":
+                                            ovulation_start = value; break;
+                                        case "period_length":
+                                            period_length = value; break;
+                                    }
+                                });
+                                console.log("cycle_length " + cycle_length);
+                                console.log("ovulation_length " + ovulation_length);
+                                console.log("ovulation_start " + ovulation_start);
+                                console.log("period_length " + period_length);
+                                setItems();
+                            },
+                            error=>{//error function
+                                console.log("ERROR - openDatabase - "+ error);
+                                HandleDbProblem(error);
+                            }
+                        );            
+                    })
+                });
+                console.log("loading - end")
+    }
+/*    
+  if (items === null ) {
+    return null;
+  }
+  */
     return (
         <View style={styles.background}>
             <View style={styles.itemsListBox}>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Dĺžka cyklu</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric"/>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>cycle_length= value.nativeEvent.text}>{cycle_length}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Trvanie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric"/>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>period_length= value.nativeEvent.text}>{period_length}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Začiatok ovulácie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric"/>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_start= value.nativeEvent.text}>{ovulation_start}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Trvanie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric"/>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_length= value.nativeEvent.text}>{ovulation_length}</TextInput>
                 </View>
             </View>
             <View style={styles.buttonBox}>
-                <Pressable style={styles.buttonS} >
-                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")}/>
+                <Pressable style={styles.buttonS}  onPress={()=>{
+                    cycle_length = 0;
+                    navigation.navigate("Home");
+                    }
+                }>
+                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
                 </Pressable>
-                <Pressable style={styles.buttonS}>
+                <Pressable style={styles.buttonS} onPress={()=>{SaveSettings(db,navigation)}}>
                     <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
                 </Pressable>
             </View>
         </View>
     );
+}
+
+function SaveSettings(db,navigation)
+{
+  
+   SaveSetting(db,cycle_length,"cycle_length",navigation );
+   SaveSetting(db,ovulation_length,"ovulation_length" ,navigation);
+   SaveSetting(db,ovulation_start,"ovulation_start" ,navigation);
+   SaveSetting(db,period_length,"period_length",navigation );
+   
+   
+
+}
+
+function SaveSetting(db, value,id, navigation)
+{    console.log("navigation" + navigation);
+    db.transaction(
+        (tx) => {
+            tx.executeSql(
+            "update sett set value =? where id = ?",
+            [
+                value,id
+            ],
+            (txObj, resultSet) => {console.log('db data res ------>',  resultSet.dbnotes);IncreaseSave(navigation);},
+            (txObj, error) => {console.log('Error insert', error); saves = 0;HandleDbProblem(error)}
+            );                         
+        }
+        )
+}
+
+function IncreaseSave(navigation)
+{
+    console.log("IncreaseSave - without call");
+    console.log("navigation" + navigation);
+saves++;
+if (saves == 4 )
+    {
+        saves = 0;
+        navigation.navigate("Home");
+    }
+}
+
+function HandleDbProblem(ex)
+{
+    console.log("HandleDbProblem - without call");
+    Alert.alert("Niečo sa pokazilo", ""+ex, [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
 }
 
 const styles = StyleSheet.create({

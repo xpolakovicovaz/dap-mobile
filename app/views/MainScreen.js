@@ -3,8 +3,14 @@ import {StyleSheet, View, Text, Pressable, Image} from 'react-native'
 
 
 import colors from '../global/colors';
+import {InitSetting} from '../db/dbController';
+
 
 function MainScreen({navigation}) {
+
+    console.log("not go to init settings33");
+   let a =  InitSetting();
+
     console.log("MainScreen start");
     return (
         <View style={styles.background}>
