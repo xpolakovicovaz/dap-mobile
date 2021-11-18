@@ -10,51 +10,6 @@ let ovulation_length = 0;
 let ovulation_start = 0;
 let period_length = 0;
 let saves = 0;
-/*
-function setItems(array)
-{ 
-    console.log("in set items ");
-    array.map(({id, value})=> 
-{
-    switch(id)
-    {
-        case "cycle_length":
-            cycle_length = value; break;
-        case "ovulation_length":
-            ovulation_length = value; break;
-        case "ovulation_start":
-            ovulation_start = value; break;
-        case "period_length":
-            period_length = value; break;
-    }
-});
-console.log("cycle_length " + cycle_length);
-console.log("ovulation_length " + ovulation_length);
-console.log("ovulation_start " + ovulation_start);
-console.log("period_length " + period_length);
-React.useState(null);
-}
-
-function loadItems()
-{ console.log("loading db ")
-let a = GetDb();
-console.log("db" + a);
-    React.useEffect(()=>{
-        a.transaction((tx)=>{
-            tx.executeSql("select * from sett",//sql
-                [], //sql args
-                (_, { rows:{ _array} }) =>{//callback function
-                setItems(_array)
-                },
-                error=>{//error function
-                    console.log("ERROR - openDatabase - "+ error)
-                }
-            );            
-        })
-    });
-    console.log("loaing - end")
-}
-*/
 const SettingsScreen = ({navigation}) => {
 //function SettingsScreen (props){
     const [items, setItems] = React.useState(null);

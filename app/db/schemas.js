@@ -9,7 +9,7 @@ const DaySchema = {
       p_end: {type:"bool", default:false},
       sex: "bool?",
       sex: "pill?"
-    },
+    },s
     primaryKey: "_id",
   };
 
