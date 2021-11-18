@@ -1,21 +1,23 @@
 import React from 'react';
-import {StyleSheet, View, Text, Pressable, Image, Dimensions} from 'react-native'
+import {StyleSheet, View, Text, Pressable, Image, Dimensions} from 'react-native';
+import moment from 'moment'
 
 
 import colors from '../global/colors';
 import {InitSetting, GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart} from '../db/dbController';
 
-
+let inPeriod = false;
+let loaded = false;
 
 const MainScreen= ({navigation})=> {
     const [items, setItems] = React.useState(null);
     console.log("main screen - open ");
-    let number = 28;
-    if (LastStart < new Date())
-    number = GetRemindingDays();
+    let number = GetRemindingDays();
+    let db = GetDb();
+ //   if (!loaded)
+{
    let a =  InitSetting();
-   console.log("db init ok ");
-   let db = GetDb();
+
    React.useEffect(()=>{
     db.transaction((tx)=>{
         tx.executeSql("select * from sett",//sql
@@ -52,22 +54,22 @@ const MainScreen= ({navigation})=> {
         );    
         tx.executeSql("select date from day where p_end = 1 order by date desc limit 1",
         [],
-        (tr, {rows:{array}})=> {_array.map(({date})=>{console.log("success - last end - " + date);LastEnd(date)})},
+        (tr, {rows:{_array}})=> {_array.map(({date})=>{console.log("success - last end - " + date);LastEnd(date)})},
         (tr, error)=>{console.log("ERROR - last_start - "+ error);}
         );      
     },          
     (error) => HandleDbProblem(error),
-    setItems())
+    ()=>{loaded = true;setItems();})
 });
 console.log("loading - end")
-
+}
 
     console.log("MainScreen start");
     return (
         <View style={styles.background}>
             <View style={styles.textBox}>
                 <Text style={styles.smallText}>Ešte</Text>
-                <Text style={styles.bigText}>{number}</Text>
+                <Text style={[styles.bigText,{color:inPeriod?colors.red:colors.grey}]}>{number}</Text>
                 <Text style={styles.smallText}>{GetDayText(number)}</Text>
             </View>
             <View style={styles.buttonBox}>
@@ -95,7 +97,28 @@ function GetDayText (number)
 }
 function GetRemindingDays()
 {
-    
+    let d= "?";
+    if (moment(LastStart(),"yyyy-MM-DD" , false) < moment())
+    {
+        if (moment(LastStart(),"yyyy-MM-DD" , false)< moment(LastEnd(),"yyyy-MM-DD" , false) && LastEnd() != "2999-01-01")
+        {
+            d = moment(LastStart(),'yyyy-MM-DD', false).add(CycleLength(), "day").diff(moment(), "days") ;
+            console.log(" CycleLength je " +CycleLength());
+            inPeriod = true;
+        }
+        else
+        {
+            d = moment(LastStart(), 'yyyy-MM-DD', false).add(PeriodLength(), "day").diff(moment(), "day");
+            console.log(" PeriodLength je " +PeriodLength());
+            console.log(" expected end j " +moment(LastStart(), 'yyyy-MM-DD', false).add(PeriodLength(), "day").format("yyyy-MM-DD"));
+            console.log(" now je " +moment().format("yyyy-MM-DD"));
+            inPeriod = true;
+        }
+    }
+    console.log("last start je " +LastStart());
+    console.log("last end je " + LastEnd());
+    console.log("d jeeeeeeeee " + d);
+    return d;
 } 
 
 const styles = StyleSheet.create({

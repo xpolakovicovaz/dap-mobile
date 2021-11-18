@@ -1,17 +1,18 @@
-import { bundleDirectory } from "expo-file-system";
+
 import * as SQLite from "expo-sqlite";
 
 
 
 
-let lastStart = new Date(2099,1,1);
+let lastStart = "2999-01-01";
 export function LastStart (value)
 {
   if (value!=null)
     lastStart = value;
   return lastStart
+
 }
-let lastEnd = new Date(2099,1,1);
+let lastEnd = "2999-01-01";
 export function LastEnd (value)
 {
   if (value!=null)
