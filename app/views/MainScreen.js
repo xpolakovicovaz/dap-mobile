@@ -104,7 +104,7 @@ function GetRemindingDays()
         {
             d = moment(LastStart(),'yyyy-MM-DD', false).add(CycleLength(), "day").diff(moment(), "days") ;
             console.log(" CycleLength je " +CycleLength());
-            inPeriod = true;
+            inPeriod = false;
         }
         else
         {

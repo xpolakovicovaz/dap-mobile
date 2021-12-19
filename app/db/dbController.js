@@ -22,22 +22,27 @@ export function LastEnd (value)
 let cycle_length =28;
 export function CycleLength (value)
 {
-  if (value!=null)
+  if (value!=null && value>0)
   cycle_length = value;
   return cycle_length
 }
 let period_length =5;
 export function PeriodLength (value)
 {
-  if (value!=null)
+  if (value!=null && value>0)
   period_length = value;
   return period_length
 }
 let ovulation_start = 12;
 export function OvulationStart (value)
 {
-  if (value!=null)
+  
+  console.log("---------------OvulationStart-----------------------");
+  console.log("value " + value);
+  console.log("ovulation_start " + ovulation_start);
+  if (value!=null && value>0)
   ovulation_start = value;
+  console.log("ovulation_start before send " + ovulation_start);
   return ovulation_start
 }
 
@@ -57,7 +62,7 @@ export function GetDb ()
 }
 export function InitSetting ()
 {
-    console.log("in init settings aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    //console.log("in init settings aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
     db.transaction(
       (tx) => {

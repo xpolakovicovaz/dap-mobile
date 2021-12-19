@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, Text, TextInput, StyleSheet, Pressable, Image, Alert } from 'react-native';
 
+
 import colors from '../global/colors';
-import {GetDb} from '../db/dbController';
+import {GetDb, CycleLength, PeriodLength,OvulationStart} from '../db/dbController';
 
 
 let cycle_length = 0;
@@ -15,10 +16,10 @@ const SettingsScreen = ({navigation}) => {
     const [items, setItems] = React.useState(null);
     let db = GetDb();
     console.log(db)
-
+/*
     //if (period_length == 0)
     { 
-        console.log("loading db again ")
+        //console.log("loading db again ")
 
                 React.useEffect(()=>{
                     db.transaction((tx)=>{
@@ -32,8 +33,6 @@ const SettingsScreen = ({navigation}) => {
                                     {
                                         case "cycle_length":
                                             cycle_length = value; break;
-                                        case "ovulation_length":
-                                            ovulation_length = value; break;
                                         case "ovulation_start":
                                             ovulation_start = value; break;
                                         case "period_length":
@@ -55,6 +54,7 @@ const SettingsScreen = ({navigation}) => {
                 });
                 console.log("loading - end")
     }
+  */  
 /*    
   if (items === null ) {
     return null;
@@ -65,19 +65,15 @@ const SettingsScreen = ({navigation}) => {
             <View style={styles.itemsListBox}>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Dĺžka cyklu</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>cycle_length= value.nativeEvent.text}>{cycle_length}</TextInput>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>cycle_length= value.nativeEvent.text}>{CycleLength()}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description}>Trvanie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>period_length= value.nativeEvent.text}>{period_length}</TextInput>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>period_length= value.nativeEvent.text}>{PeriodLength()}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
-                    <Text style={styles.description}>Začiatok ovulácie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_start= value.nativeEvent.text}>{ovulation_start}</TextInput>
-                </View>
-                <View style={styles.itemBox}>
-                    <Text style={styles.description}>Trvanie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_length= value.nativeEvent.text}>{ovulation_length}</TextInput>
+                    <Text style={styles.description}>Ovulácia</Text>
+                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_start= value.nativeEvent.text}>{OvulationStart()}</TextInput>
                 </View>
             </View>
             <View style={styles.buttonBox}>
@@ -100,7 +96,6 @@ function SaveSettings(db,navigation)
 {
   
    SaveSetting(db,cycle_length,"cycle_length",navigation );
-   SaveSetting(db,ovulation_length,"ovulation_length" ,navigation);
    SaveSetting(db,ovulation_start,"ovulation_start" ,navigation);
    SaveSetting(db,period_length,"period_length",navigation );
    
@@ -109,7 +104,7 @@ function SaveSettings(db,navigation)
 }
 
 function SaveSetting(db, value,id, navigation)
-{    console.log("navigation" + navigation);
+{ //   console.log("navigation" + navigation);
     db.transaction(
         (tx) => {
             tx.executeSql(
@@ -117,7 +112,18 @@ function SaveSetting(db, value,id, navigation)
             [
                 value,id
             ],
-            (txObj, resultSet) => {console.log('db data res ------>',  resultSet.dbnotes);IncreaseSave(navigation);},
+            (txObj, resultSet) => {
+                IncreaseSave(navigation);
+                switch(id)
+                   {
+                       case "cycle_length":
+                           CycleLength(value); break;
+                       case "ovulation_start":
+                           OvulationStart(value); break;
+                       case "period_length":
+                           PeriodLength(value); break;
+                   }
+               },
             (txObj, error) => {console.log('Error insert', error); saves = 0;HandleDbProblem(error)}
             );                         
         }
@@ -126,10 +132,10 @@ function SaveSetting(db, value,id, navigation)
 
 function IncreaseSave(navigation)
 {
-    console.log("IncreaseSave - without call");
-    console.log("navigation" + navigation);
+    //console.log("IncreaseSave - without call");
+    //console.log("navigation" + navigation);
 saves++;
-if (saves == 4 )
+if (saves == 3 )
     {
         saves = 0;
         navigation.navigate("Home");
@@ -138,7 +144,7 @@ if (saves == 4 )
 
 function HandleDbProblem(ex)
 {
-    console.log("HandleDbProblem - without call");
+    //console.log("HandleDbProblem - without call");
     Alert.alert("Niečo sa pokazilo", ""+ex, [
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
