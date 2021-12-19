@@ -2,3 +2,7 @@ rsf - create class
 rnss - create stylesheet
 
 https://github.com/th3rdwave/react-native-safe-area-context/issues/110
+
+
+todo> 
+kalendar
