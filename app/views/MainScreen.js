@@ -76,7 +76,7 @@ console.log("loading - end")
                 <Pressable style={styles.buttonS} onPress={()=>navigation.navigate("Settings")}>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/gear.png")}/>
                 </Pressable>
-                <Pressable style={styles.buttonS}>
+                <Pressable style={styles.buttonS} onPress={()=>navigation.navigate("Calendar", {navigation:navigation, date:moment()})}>
                     <Image  style={styles.imageS} source={require("../assets/cal.png")}  resizeMode="contain"/>
                 </Pressable>
             </View>

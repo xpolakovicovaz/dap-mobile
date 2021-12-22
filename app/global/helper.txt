@@ -5,4 +5,5 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/110
 
 
 todo> 
+navigator na kalendar bol zmemeny - pridane argumentys
 kalendar

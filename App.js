@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import MainScreen from './app/views/MainScreen';
 import SettingsScreen from './app/views/SettingsScreen';
+import CalendarScreen from './app/views/CalendarScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { openDatabase } from 'expo-sqlite';
@@ -14,6 +15,7 @@ function App() {
     <Stackq.Navigator initialRouteName="Home">
       <Stackq.Screen name="Home" component={MainScreen}/>
       <Stackq.Screen name="Settings" component={SettingsScreen}/>
+      <Stackq.Screen name="Calendar" component={CalendarScreen}/>
     </Stackq.Navigator>
   </NavigationContainer>
   );
