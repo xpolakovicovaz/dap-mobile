@@ -37,12 +37,8 @@ let ovulation_start = 12;
 export function OvulationStart (value)
 {
   
-  console.log("---------------OvulationStart-----------------------");
-  console.log("value " + value);
-  console.log("ovulation_start " + ovulation_start);
   if (value!=null && value>0)
   ovulation_start = value;
-  console.log("ovulation_start before send " + ovulation_start);
   return ovulation_start
 }
 
