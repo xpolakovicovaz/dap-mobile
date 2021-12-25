@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import colors from '../global/colors';
 //import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart, db} from '../db/dbController';
-//import CalendarElement from './CalendarElement';
+import CalendarElement from './CalendarElement';
 
 const screenWidth = Dimensions.get("window").width;
 const boxsize = Math.floor((screenWidth-20)/7);
@@ -76,12 +76,17 @@ function RenderItem({item})
 {
   console.log("renderitem "+item.id);
    //return (<View style={styles.box}></View>);
-  return (
+  /*return (
     <View style={styles.labelBox}>
       <Text style={styles.labelText}>{item.id}</Text>
     </View>
-    );
+    );*/
     
+    return (
+      <View style={styles.labelBox}>
+      {CalendarElement(item.date, item.period, item.sex, item.pill, item.note)}
+      </View>
+    );
 }
 
 function RenderLabel({item})
@@ -200,7 +205,7 @@ let i = 0;
 
     console.log(startDay);
     dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:null, period:false, active: startDay.month == day.month && startDay.year == day.year  });
-    startDay.add(1,"days");
+    startDay = startDay.clone().add(1,"days");
   }
   console.log("init end");
   return dates;
