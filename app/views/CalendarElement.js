@@ -3,61 +3,30 @@ import {StyleSheet, View, Text, Pressable, Image} from 'react-native'
 
 
 import colors from '../global/colors';
-import {InitSetting} from '../db/dbController';
 
-/*
-  <Pressable style={styles.background} borderColor={period?colors.red:colors.grey} onPress={()=>navigation.navigate("Settings")}>
-            <View style={styles.textBox}>
-                <Text style={styles.smallText}>date.day</Text>
-            </View>
-           <Image  style={styles.imageS}  bottom="13%" left="13%"  source={require("../assets/pill.png")}  resizeMode="contain"/> 
-            <Image  style={styles.imageS} bottom="13%" right="13%" source={require("../assets/note.png")}  resizeMode="contain"/>
-            <Image  style={styles.imageS} top="13%" left="13%" source={require("../assets/heart.png")}  resizeMode="contain"/>
-        </Pressable>
-*/
 
-function CalendarElement( date, period, sex, pill, note, active) {
-// borderColor={period?colors.red:colors.grey}
-console.log("CalendarElement "+date.format("DD-MM-yyyy"));
+function CalendarElement( date, period, ovulation, sex, pill, note, active) {
 
-/*return (
-    <View style={styles.background} >
-            <View style={styles.textBox}>
-                <Text style={styles.smallText}>{date.date()}</Text>
-            </View>
-            <Image  style={styles.imageS}  bottom="0%" left="0%"  source={require("../assets/pill.png")}  resizeMode="contain"/> 
-            <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>
-            <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>
+    let border_color =!active? colors.grey_inactivee :( period ? colors.red : ( ovulation ? colors.green : colors.grey));
     
-          </View>
-);
-*/
-
-    console.log("CalendarElement start");
     if (date == null)
         return (
             <View style={styles.background}></View>
         )
-    else if  (active)
+    else 
     
         return (
-            <View style={styles.background} >
+            <View style={[styles.background, {borderColor:border_color}] } >
                 <View style={styles.textBox}>
-                    <Text style={styles.smallText}>{date.date()}</Text>
+                    <Text style={[styles.smallText, {color:border_color}]}>{date.date()}</Text>
                 </View>
-                {pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
-                <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>
-                {!sex && <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>}
+                {active && !pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
+                {active && note.trim()!="" && <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>}
+                {active && !sex && <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>}
+                
             </View>
         );
-    else
-        return (
-            <View style={[styles.background, {borderColor:colors.grey_inactivee}] } >
-                <View style={styles.textBox}>
-                    <Text style={[styles.smallText, {color:colors.grey_inactivee}]}>{date.date()}</Text>
-                </View>
-            </View>
-        );
+  
 }
 
 const styles = StyleSheet.create({

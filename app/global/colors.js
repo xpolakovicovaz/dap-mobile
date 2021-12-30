@@ -3,7 +3,7 @@
      red:"#ff0000",
      green:"#109912",
      grey:"#bbbbbb",
-     grey_inactivee:"#707070",
+     grey_inactivee:"#606060",
      grey_select:"#aaaaaa",
      grey_important:"#505050",
      grey_hover:"#888888",
