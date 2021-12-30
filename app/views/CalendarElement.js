@@ -16,36 +16,48 @@ import {InitSetting} from '../db/dbController';
         </Pressable>
 */
 
-function CalendarElement( date, period, sex, pill, note) {
+function CalendarElement( date, period, sex, pill, note, active) {
 // borderColor={period?colors.red:colors.grey}
 console.log("CalendarElement "+date.format("DD-MM-yyyy"));
-return (
+
+/*return (
     <View style={styles.background} >
             <View style={styles.textBox}>
                 <Text style={styles.smallText}>{date.date()}</Text>
             </View>
-        
+            <Image  style={styles.imageS}  bottom="0%" left="0%"  source={require("../assets/pill.png")}  resizeMode="contain"/> 
+            <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>
+            <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>
+    
           </View>
 );
-/*
+*/
+
     console.log("CalendarElement start");
     if (date == null)
+        return (
+            <View style={styles.background}></View>
+        )
+    else if  (active)
     
-    return (
-        <View style={styles.background}></View>
-    )
-    else
-    return (
-        <View style={styles.background} >
-            <View style={styles.textBox}>
-                <Text style={styles.smallText}>date.day</Text>
+        return (
+            <View style={styles.background} >
+                <View style={styles.textBox}>
+                    <Text style={styles.smallText}>{date.date()}</Text>
+                </View>
+                {pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
+                <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>
+                {!sex && <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>}
             </View>
-           <Image  style={styles.imageS}  bottom="13%" left="13%"  source={require("../assets/pill.png")}  resizeMode="contain"/> 
-            <Image  style={styles.imageS} bottom="13%" right="13%" source={require("../assets/note.png")}  resizeMode="contain"/>
-            <Image  style={styles.imageS} top="13%" left="13%" source={require("../assets/heart.png")}  resizeMode="contain"/>
-        </View>
-    );
-    */
+        );
+    else
+        return (
+            <View style={[styles.background, {borderColor:colors.grey_inactivee}] } >
+                <View style={styles.textBox}>
+                    <Text style={[styles.smallText, {color:colors.grey_inactivee}]}>{date.date()}</Text>
+                </View>
+            </View>
+        );
 }
 
 const styles = StyleSheet.create({
@@ -75,13 +87,13 @@ bigText:{
     color:colors.grey
 },    
 buttonBox:{
-    height:70,
+    height:40,
     flexDirection:"row",
     margin:-1
 },
 imageS:{
-    width:"25%",
-    height:"25%",
+    width:"40%",
+    height:"40%",
     margin:2, 
     position:"absolute"
 }

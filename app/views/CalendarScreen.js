@@ -83,9 +83,11 @@ function RenderItem({item})
     );*/
     
     return (
-      <View style={styles.labelBox}>
-      {CalendarElement(item.date, item.period, item.sex, item.pill, item.note)}
-      </View>
+      //<View style={styles.labelBox}>
+      <Pressable style={styles.labelBox} onPress={()=>navigation.navigate("Calendar", {navigation:navigation, date:moment()})}>
+              
+      {CalendarElement(item.date, item.period, item.sex, item.pill, item.note, item.active)}
+      </Pressable>
     );
 }
 
@@ -203,8 +205,8 @@ let i = 0;
   for (i=0;i<42;i++)
   {
 
-    console.log(startDay);
-    dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:null, period:false, active: startDay.month == day.month && startDay.year == day.year  });
+    console.log("startDay", startDay.month() , day.month() ,startDay.year() , day.year() );
+    dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:null, period:false, active: startDay.month() == day.month() && startDay.year() == day.year()  });
     startDay = startDay.clone().add(1,"days");
   }
   console.log("init end");
