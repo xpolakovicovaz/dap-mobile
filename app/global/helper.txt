@@ -3,6 +3,9 @@ rnss - create stylesheet
 
 https://github.com/th3rdwave/react-native-safe-area-context/issues/110
 
+inštalácia expo package
+-cez prikazovy riadok - cd na projekt (tam kde je .expo)
+-expo install expo-checkbox
 
 todo> 
 navigator na kalendar bol zmemeny - pridane argumentys

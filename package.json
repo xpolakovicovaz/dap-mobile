@@ -21,7 +21,8 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-web": "~0.13.12",
-    "save": "^2.4.0"
+    "save": "^2.4.0",
+    "expo-checkbox": "~1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"

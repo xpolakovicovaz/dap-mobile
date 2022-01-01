@@ -20,9 +20,9 @@ function CalendarElement( date, period, ovulation, sex, pill, note, active) {
                 <View style={styles.textBox}>
                     <Text style={[styles.smallText, {color:border_color}]}>{date.date()}</Text>
                 </View>
-                {active && !pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
+                {active && pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
                 {active && note.trim()!="" && <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>}
-                {active && !sex && <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>}
+                {active && sex && <Image  style={styles.imageS} top="0%" left="0%" source={require("../assets/heart.png")}  resizeMode="contain"/>}
                 
             </View>
         );
