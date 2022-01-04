@@ -1,44 +1,64 @@
 import React from 'react';
-import Checkbox from 'expo-checkbox';
-import {StyleSheet, View, Text, Pressable, Image, TextInput} from 'react-native'
-
+import {StyleSheet, View, Text, Pressable, Image, TextInput} from 'react-native';
+import moment from 'moment';
 
 import colors from '../global/colors';
 import {GetDb} from '../db/dbController';
+import CheckBoxElement from './CheckBoxElement';
 
 let p_start = false;
 let p_end = false;
+let date = moment();
+let period = false;
+let sex = false;
+let pill =false;
+let note = "";
 
 function DayEditorScreen({route,navigation }) {
-    let date = route.params.date;
-    let period = route.params.period;
-    let sex = route.params.sex;
-    let pill = route.params.pill;
-    let note = route.params.note;
+
+    React.useEffect(()=>{
+        date = route.params.date;
+        period = route.params.period;
+        sex = route.params.sex;
+        pill = route.params.pill;
+        note = route.params.note;
     
-    console.log("CalendarElement start");
-    const [isChecked, setChecked] = React.useState(false);
+       });
+
+    let [sex_value, onChangeSex] = React.useState(sex);
+    let [pill_value, onChangePill] = React.useState(pill);
+    let [period_value, onChangePeriod] = React.useState(period);
+    let [note_value, onChangeNote] = React.useState(note);
+
+
+ 
+
+    //sex_value = sex;
+  
+    // onChange={(value)=>{p_start = !period && value.nativeEvent.value ? true:false;p_end = period && !value.nativeEvent.value ? true:false }}/>
     return (
         <View style={styles.background}>
+            <View style={styles.background}>
              <View style={styles.titleBox}>
                 <Text style={styles.titleText}>{date.format("DD.MM")}</Text>
             </View>
             <View style={styles.itemsListBox}>
-            <View style={styles.itemBox}>
-                <Text style={styles.descriptionText}>Moje dni</Text>
-                <Checkbox style={styles.checkbox} value ={period} onValueChanged={(value)=>{p_start = !period && value.nativeEvent.value ? true:false;p_end = period && !value.nativeEvent.value ? true:false }}/>
-            </View>
-            <View style={styles.itemBox}>
-                <Text style={styles.descriptionText}>Tabletka</Text>
-                <Checkbox style={styles.checkbox} value ={pill} onValueChanged={(value)=>{pill =  value.nativeEvent.value}}/>
-            </View>
-            <View style={styles.itemBox}>
-                <Text style={styles.descriptionText}>Sex</Text>
-                <Checkbox style={styles.checkbox} value ={sex} onValueChange={(value)=>{sex = value;console.log("novy sex + "+ value + "  premenna   " + sex);setChecked}}/>
-            </View>
+                <View style={styles.itemBox}>
+                    <Text style={styles.descriptionText}>Moje dni</Text>
+                    <CheckBoxElement  checked={period_value} onChange={onChangePeriod}/>
+                </View>
+                <View style={styles.itemBox}>
+                    <Text style={styles.descriptionText}>Tabletka</Text>
+                    <CheckBoxElement  checked={pill_value} onChange={onChangePill}/>
+                </View>
+                <View style={styles.itemBox}>
+                    <Text style={styles.descriptionText}>Sex</Text>
+                    <CheckBoxElement  checked={sex_value} onChange={onChangeSex}/>
+                </View>
             </View>
             <View style={styles.noteBox}>
-                <TextInput style={styles.textInput} value={note} onSubmitEditing={(value)=>note = value.nativeEvent.text}/>
+                <TextInput style={styles.textInput} value={note_value} onChange={onChangeNote}/>
+            </View>
             </View>
             <View style={styles.buttonBox}>
                 <Pressable style={styles.buttonS}  onPress={()=>{
@@ -115,7 +135,7 @@ const styles = StyleSheet.create({
         marginRight:"5%"
     },
     itemsListBox:{
-        flex:1,
+        height:"30%",
         width:"100%",     
         justifyContent:"center"
 
@@ -132,9 +152,16 @@ const styles = StyleSheet.create({
         alignSelf:"flex-end"
     },    
     noteBox:{
-        height:"50%"
+        width:"90%",
+         height:"45%",
+         marginLeft:"5%",
+         marginRight:"5%",
+         marginBottom:"5%"
     },    
     textInput:{
+        backgroundColor:"white",
+        width:"100%",
+        height:"100%", 
         fontSize:25,
         color:"black"
     },
