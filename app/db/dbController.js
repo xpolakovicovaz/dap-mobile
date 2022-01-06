@@ -53,6 +53,7 @@ function openDatabase() {
 export const db = openDatabase();
 export function GetDb ()
 {
+  console.log("-----get db----" + (""+db));
   if ((""+db).includes("\"_running\": false,"))db = openDatabase();
   return db;
 }

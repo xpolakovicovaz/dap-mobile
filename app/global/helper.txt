@@ -8,5 +8,6 @@ inštalácia expo package
 -expo install expo-checkbox
 
 todo> 
-navigator na kalendar bol zmemeny - pridane argumentys
-kalendar
+dayeditor - ukladanie
+logika do kalendara
+swipe screen do calendara

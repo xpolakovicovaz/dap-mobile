@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Text, Pressable, Image, TextInput} from 'react-native';
+import {StyleSheet, View, Text, Pressable, Image, TextInput, Keyboard} from 'react-native';
 import moment from 'moment';
 
 import colors from '../global/colors';
@@ -15,21 +15,36 @@ let pill =false;
 let note = "";
 
 function DayEditorScreen({route,navigation }) {
+    console.log("editor.getdb");
+    let db = GetDb();  
+    console.log("db " + db);
+    date = route.params.date;
 
     React.useEffect(()=>{
-        date = route.params.date;
-        period = route.params.period;
-        sex = route.params.sex;
-        pill = route.params.pill;
-        note = route.params.note;
+
+
+        const keyboadrDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{setKeyboardVisible(true)});
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>{setKeyboardVisible(false)});
+
     
-       });
+        return ()=>{
+            keyboadrDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        }
 
-    let [sex_value, onChangeSex] = React.useState(sex);
-    let [pill_value, onChangePill] = React.useState(pill);
-    let [period_value, onChangePeriod] = React.useState(period);
-    let [note_value, onChangeNote] = React.useState(note);
+       },[] );
 
+
+    let [sex_value, onChangeSex] = React.useState(route.params.sex);
+    let [pill_value, onChangePill] = React.useState(route.params.pill);
+    let [period_value, onChangePeriod] = React.useState(route.params.period);
+    let [note_value, onChangeNote] = React.useState(route.params.note);
+
+
+   
+       
+    let [isKeyBoardVisible,setKeyboardVisible ] = React.useState(false);
+//let isKeyBoardVisible = false;
 
  
 
@@ -42,57 +57,71 @@ function DayEditorScreen({route,navigation }) {
              <View style={styles.titleBox}>
                 <Text style={styles.titleText}>{date.format("DD.MM")}</Text>
             </View>
-            <View style={styles.itemsListBox}>
-                <View style={styles.itemBox}>
-                    <Text style={styles.descriptionText}>Moje dni</Text>
-                    <CheckBoxElement  checked={period_value} onChange={onChangePeriod}/>
+            { !isKeyBoardVisible &&
+                <View style={styles.itemsListBox}>
+                    <View style={styles.itemBox}>
+                        <Text style={styles.descriptionText}>Moje dni</Text>
+                        <CheckBoxElement  checked={period_value} onChange={onChangePeriod}/>
+                    </View>
+                    <View style={styles.itemBox}>
+                        <Text style={styles.descriptionText}>Tabletka</Text>
+                        <CheckBoxElement  checked={pill_value} onChange={onChangePill}/>
+                    </View>
+                    <View style={styles.itemBox}>
+                        <Text style={styles.descriptionText}>Sex</Text>
+                        <CheckBoxElement  checked={sex_value} onChange={onChangeSex}/>
+                    </View>
                 </View>
-                <View style={styles.itemBox}>
-                    <Text style={styles.descriptionText}>Tabletka</Text>
-                    <CheckBoxElement  checked={pill_value} onChange={onChangePill}/>
-                </View>
-                <View style={styles.itemBox}>
-                    <Text style={styles.descriptionText}>Sex</Text>
-                    <CheckBoxElement  checked={sex_value} onChange={onChangeSex}/>
-                </View>
-            </View>
+            }
             <View style={styles.noteBox}>
-                <TextInput style={styles.textInput} value={note_value} onChange={onChangeNote}/>
+                <TextInput style={styles.textInput} textAlignVertical="top"  multiline={true} value={note_value} onChangeText={onChangeNote}/>
             </View>
             </View>
-            <View style={styles.buttonBox}>
-                <Pressable style={styles.buttonS}  onPress={()=>{
-                    cycle_length = 0;
-                    navigation.goBack();
-                    }
-                }>
-                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
-                </Pressable>
-                <Pressable style={styles.buttonS} onPress={()=>{SaveData( date, period, sex, pill, note,navigation)}}>
-                    <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
-                </Pressable>
-            </View>
+         
+            { !isKeyBoardVisible &&
+                <View style={styles.buttonBox}>
+                    <Pressable style={styles.buttonS}  onPress={()=>{
+                        cycle_length = 0;
+                        navigation.goBack();
+                        }
+                    }>
+                        <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
+                    </Pressable>
+                    <Pressable style={styles.buttonS} onPress={()=>{SaveData(db, date, route.params.period,period_value, sex_value, pill_value, note_value,navigation)}}>
+                        <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
+                    </Pressable>
+                </View>
+            }
         </View>
       
     );
 }
 
 
-function SaveData( date, period, sex, pill, note,navigation)
-{    console.log("SaveData" + navigation);
-    let db = GetDb();
+function SaveData(db, date, period_original, period_new, sex, pill, note,navigation)
+{  
+      console.log("SaveData");
+    //let db = GetDb();  
+    console.log( date.format("yyyy-MM-DD"));
+    console.log( !period_original && period_new ? 1:0);
+    console.log( period_original && !period_new ? 1:0);
+    console.log( sex?1:0);
+    console.log( pill?1:0);
+    console.log( note);
     db.transaction(
         (tx) => {
             tx.executeSql(
-            "insert or replace into  day (date,p_start, p_end,sex, pill, note	) values {?,?,?,?,?,?}  ",
+            "insert or replace into  day (date,p_start, p_end,sex, pill, note	) values(?,?,?,?,?,?)  ",
             [
-                date, p_start, p_end, sex?1:0, pill?1:0,note
+                date.format("yyyy-MM-DD"), !period_original && period_new ? 1:0, period_original && !period_new ? 1:0 , sex?1:0, pill?1:0,note
+               //date.format("yyyy-MM-DD"), true, false, sex, pill,note
             ],
-            (txObj, resultSet) => {console.log('db data res ------>',  resultSet.dbnotes);navigation.goBack();},
+            (txObj, resultSet) => {console.log('db data res ------>');navigation.goBack();},
             (txObj, error) => {console.log('Error insert', error);HandleDbProblem(error)}
             );                         
         }
-        )
+        );
+        console.log("SaveData done" );
 }
 
 function HandleDbProblem(ex)
@@ -164,6 +193,7 @@ const styles = StyleSheet.create({
         height:"100%", 
         fontSize:25,
         color:"black"
+
     },
     buttonBox:{
         height:70,

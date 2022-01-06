@@ -1,34 +1,17 @@
 import React from 'react';
-import { StyleSheet,TouchableOpacity, View , Image} from 'react-native';
+import { StyleSheet,TouchableOpacity, View , Image, Keyboard} from 'react-native';
 
 
 import colors from '../global/colors';
-//import {OK} from '../global/icons';
 
-let size = 50;
+let size = 100;
 
 export default  function CheckBoxElement({checked, onChange}) {
-//const CheckBoxElement =({checked, onChange})=>(
-/*
-    let size = 50;
-    function onBoxClick(){
-        onChange(!checked)
-    }*/
-    //{checked && OK(size,colors.grey)}
-    /*
-      return (
-     <View onLayout={(event) => {size= getSize(event.nativeEvent.layout) }}>
-            <TouchableOpacity>
-                style={styles.background}
-                onClick={onBoxClick}
-                {checked && OK(size,colors.grey)}
-            </TouchableOpacity>
-        </View>
-      )};
-*/
+
+
 
       return (
-        <View style={styles.empty}  onLayout={(event) => {size= getSize(event.nativeEvent.layout) }}>
+        <View style={styles.empty}  onLayout={(event) => {size= getSize(event.nativeEvent.layout);onChange(checked) ;console.log(size);}}>
   
             <TouchableOpacity  style={[styles.background,{width:size, height:size}]}   onPress={()=>{console.log(size);onChange(!checked)}}>
                
@@ -68,5 +51,3 @@ const styles = StyleSheet.create({
         margin:"10%"
     }
 }) 
-
-//export default CheckBoxElement;
