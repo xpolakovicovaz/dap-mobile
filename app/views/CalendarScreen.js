@@ -3,7 +3,7 @@ import {StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, FlatList} f
 import moment from 'moment'
 
 import colors from '../global/colors';
-//import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart, db} from '../db/dbController';
+import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart} from '../db/dbController';
 import CalendarElement from './CalendarElement';
 
 const screenWidth = Dimensions.get("window").width;
@@ -17,10 +17,69 @@ const labels = [
   {id:"Pt", label:"Pt"},
   {id:"So", label:"So"},
   {id:"Ne", label:"Ne"}
-];
+];/*
 let DATA = [
   ];
-  
+  */
+let day = moment();
+
+ let db = GetDb();
+
+const CalendarScreen = ({ route, navigation }) => {
+  day = route.params.date;
+//let db=GetDb();
+//let DATA =  InitData();
+let [isFetching, setIsFetching] = React.useState(false);
+let [DATA, setData] = React.useState(InitData());
+/*const fetchData =()=>{
+  setIsFetching(false);
+}
+const onRefresh = ()=>{
+  setIsFetching(true);
+  fetchData();
+}
+*/
+//DATA =  InitData();
+  React.useEffect(()=>{
+
+     db.transaction((tx)=>{
+       tx.executeSql("select date	,p_start, p_end	,sex, pill, note from day where strftime('%m', date) = ? and strftime('%Y', date) = ?",
+       [day.format("MM"), day.format("yyyy")],
+       (_, { rows:{ _array} }) =>{//callback function
+           _array.map(({date	,p_start, p_end	,sex, pill, note})=> 
+           {
+               UpdateData(DATA, date	,p_start, p_end	,sex, pill, note);
+              
+           });
+
+           //setItems();
+       },
+        (txObj, error) => {console.log('Error insert', error);/*HandleDbProblem(error)*/}
+       )
+     },
+     (error) => HandleDbProblem(error),
+     ()=>{setData(DATA);setIsFetching(true);}
+     );
+
+    });
+ 
+return (
+    <View style={styles.background}>
+        <View style={styles.titleBox}>
+                <Text style={styles.titleText}>{GetMonthLabel(day)}</Text>
+        </View>
+        <View style={styles.gridBox}>
+          <FlatList data={labels} renderItem={RenderLabel} numColumns={7} key={2} >
+              
+          </FlatList>
+          <FlatList data={DATA} renderItem={(item)=>RenderItem(item, navigation)}  numColumns={7} key={8} extraData={isFetching}>
+              
+          </FlatList>
+        </View>
+    </View>
+)
+}
+
 
 
 function RenderItem({item},navigation)
@@ -46,72 +105,6 @@ function RenderLabel({item})
         <Text style={styles.labelText}>{item.label}</Text>
       </View>
       );
-}
-
-let day = moment();
-//let last_start = LastStart();
-//let last_end = LastEnd();
-//
-//let DATA = [];
-
-const CalendarScreen = ({ route, navigation }) => {
-  day = route.params.date;
-//let db=GetDb();
-let DATA =  InitData();
-    //else
-    //day = moment();
-    /*
-  React.useEffect(()=>{
-    data = InitData();})
-     db.transaction((tx)=>{
-       tx.executeSql("select date	,p_start, p_end	,sex, pill, note from day where strftime('%m', date) = '?' and strftime('%Y', date) = '?'",
-       [day.format("MM"), day.format("yyyy")],
-       (_, { rows:{ _array} }) =>{//callback function
-        //   console.log('db data res ------>', _array)
-           _array.map(({date	,p_start, p_end	,sex, pill, note})=> 
-           {
-               switch(id)
-               {
-                   case "cycle_length":
-                       cycle_length = value; CycleLength(value); break;
-                   case "ovulation_start":
-                       ovulation_start = value; OvulationStart(value);break;
-                   case "period_length":
-                       period_length = value;PeriodLength(value); break;
-               }
-           });
-           console.log("cycle_length " + cycle_length);
-           console.log("ovulation_start " + ovulation_start);
-           console.log("period_length " + period_length);
-           //setItems();
-       },
-       error=>{//error function
-           console.log("ERROR - openDatabase kkk - "+ error);
-           //HandleDbProblem(error);
-       },
-
-       )
-     }
-
-    )
-  }
-  )
-*/
-return (
-    <View style={styles.background}>
-        <View style={styles.titleBox}>
-                <Text style={styles.titleText}>{GetMonthLabel(day)}</Text>
-        </View>
-        <View style={styles.gridBox}>
-          <FlatList data={labels} renderItem={RenderLabel} numColumns={7} key={2} >
-              
-          </FlatList>
-          <FlatList data={DATA} renderItem={(item)=>RenderItem(item, navigation)} numColumns={7} key={8}>
-              
-          </FlatList>
-        </View>
-    </View>
-)
 }
 
 function GetMonthLabel(date)
@@ -146,13 +139,30 @@ let i = 0;
   for (i=0;i<42;i++)
   {
 
-    console.log("startDay", startDay.month() , day.month() ,startDay.year() , day.year() );
+   // console.log("startDay", startDay.month() , day.month() ,startDay.year() , day.year() );
     dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:"", period:false, ovulation:false, active: startDay.month() == day.month() && startDay.year() == day.year()  });
     startDay = startDay.clone().add(1,"days");
   }
   console.log("init end");
   return dates;
 };
+
+function UpdateData(DATA, date	,p_start, p_end	,sex, pill, note)
+{
+  console.log("UpdateData" + DATA.length);
+  let a = DATA.find(x=>x.date.format("yyyy-MM-DD") == new moment(date,"yyyy-MM-DD").format("yyyy-MM-DD"));
+  if (a != null)
+  {
+    a.sex = sex==1;
+    a.pill = pill==1;
+    a.note = note;
+    a.p_end = p_end==1;
+    a.p_start = p_start==1;
+
+    console.log("a je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") == new moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).sex);
+  }
+  
+}
 
 function GetStartDay()
 {

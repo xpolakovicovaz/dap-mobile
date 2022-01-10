@@ -71,10 +71,22 @@ export function InitSetting ()
         );
         tx.executeSql(
           "create table if not exists day (date	TEXT primary key NOT NULL,p_start	INTEGER DEFAULT 0, p_end	INTEGER DEFAULT 0,sex	INTEGER DEFAULT 0, pill	INTEGER DEFAULT 0, note	TEXT);"
-        );
+        ); 
         tx.executeSql(/* -- for debug only -- */
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2021-10-29",1,0,0,0, "klokan"]
+        );
+        tx.executeSql(/* -- for debug only -- */
+          "delete from day",
+          []
+        );
+        tx.executeSql(/* -- for debug only -- */
+          "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
+          ["2022-01-02",1,0,0,1, "klokan"]
+        );
+        tx.executeSql(/* -- for debug only -- */
+          "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
+          ["2022-01-04",0,1,1,1, ""]
         );
         tx.executeSql("select * from sett", [], (_, { rows }) =>{
           console.log(JSON.stringify(rows));
