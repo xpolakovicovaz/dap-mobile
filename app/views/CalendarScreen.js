@@ -33,10 +33,12 @@ const CalendarScreen = ({ route, navigation }) => {
 //let DATA =  InitData();
 let [isFetching, setIsFetching] = React.useState(false);
 let [DATA, setData] = React.useState(InitData());
-let [stateFormPreviousMonth, setStateFromPreviousMonth] = React.useState(false);
+//let [stateFormPreviousMonth, setStateFromPreviousMonth] = React.useState(false);
 let start = "";
 let end = "";
 let state = false;
+
+console.log("isFetching"+isFetching);
 
 /*const fetchData =()=>{
   setIsFetching(false);
@@ -50,7 +52,8 @@ const onRefresh = ()=>{
   React.useEffect(()=>{
 
      db.transaction((tx)=>{
-     
+      console.log('volanie db--------------------------------------------------------------------');
+
        //load data for month
        tx.executeSql("select date	,p_start, p_end	,sex, pill, note from day where strftime('%m', date) = ? and strftime('%Y', date) = ?",
        [day.format("MM"), day.format("yyyy")],
@@ -101,7 +104,7 @@ const onRefresh = ()=>{
         state = ( moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') > day ||  moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') <  moment().startOf('day') &&  moment().startOf('day') == day.add(1,"months").add(-1,"days") ); 
         
        SetPeriodX(DATA, state); 
-        setStateFromPreviousMonth(false);setData(DATA);setIsFetching(true);
+      /*  setStateFromPreviousMonth(false);*/setData(DATA);setIsFetching(true);
       }      //
        );//
        
@@ -120,6 +123,19 @@ return (
               
           </FlatList>
         </View>
+        <View style={styles.buttonBox}>
+                <TouchableOpacity style={styles.buttonS}  onPress={()=>{
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(-1,"months")});
+                    }
+                }>
+                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/left.png")} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>{
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(1,"months")});
+                    }}>
+                    <Image  style={styles.imageS} source={require("../assets/right.png")}  resizeMode="contain"/>
+                </TouchableOpacity>
+            </View>
     </View>
 )
 }
@@ -178,7 +194,9 @@ function GetMonthLabel(date)
 function InitData() {
   console.log("init start");
   let startDay = GetStartDay();
-let i = 0;
+  
+  console.log("startDay" + startDay.format("yyyy-MM-DD"));
+  let i = 0;
   var dates = [];
   for (i=0;i<42;i++)
   {
@@ -188,6 +206,8 @@ let i = 0;
     startDay = startDay.clone().add(1,"days");
   }
   console.log("init end");
+    
+  console.log("enday" + startDay.format("yyyy-MM-DD"));
   return dates;
 };
 
@@ -234,10 +254,10 @@ function SetPeriodX(DATA, period)
       element.period = false;
     } 
   }); 
-  console.log("SetPeriod2");
+  //console.log("SetPeriod2");
   if ( day.clone().add(1,"months")>now)
   {
-    console.log("SetFuturePeriod have to be set");
+    //console.log("SetFuturePeriod have to be set");
     SetFuturePeriod(DATA)
   }
   
@@ -270,23 +290,24 @@ function SetFuturePeriod(DATA)
 }
 function setFutureData(DATA,date, period, ovulation)
 {
-  console.log("setFutureData");
+  //console.log("setFutureData");
   let a = DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD"));
   if (a != null)
   {
     a.future_period = period;
     a.ovulation = ovulation;
 
-    console.log("future_period je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).future_period);
+    //console.log("future_period je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).future_period);
   }
 }
 
 function GetStartDay()
 {
+  console.log("day is " + day.format("yyyy-MM-DD"));
   if (day.day==1)
     return day;
   else
-    return moment().add(-1,"months").endOf('month').startOf('isoweek');
+    return day.clone().add(-1,"months").endOf('month').startOf('isoweek');
 }
 
 const styles = StyleSheet.create({
@@ -307,7 +328,7 @@ const styles = StyleSheet.create({
 
     },
     titleBox:{
-        height:"20%",
+        height:"15%",
         margin:1,
         alignItems:"center",
         justifyContent:"center"
@@ -334,6 +355,24 @@ const styles = StyleSheet.create({
   gridBox:{
     margin:marginwidth
 },
+buttonBox:{
+  height:70,
+  flexDirection:"row",
+  margin:-1
+},
+buttonS:{
+  width:"50%",
+  height:"100%",
+  backgroundColor:colors.background,
+  borderWidth:1,
+  borderColor:colors.grey,
+  alignItems:"center"
+},
+imageS:{
+  width:50,
+  height:50,
+  margin:7
+}
 })
 
 export default CalendarScreen;
