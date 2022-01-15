@@ -23,14 +23,21 @@ let DATA = [
   */
 let day = moment();
 
- let db = GetDb();
+let db = GetDb();
 
 const CalendarScreen = ({ route, navigation }) => {
+
+  console.log("**************************calendar screeeen********************************");
   day = route.params.date;
 //let db=GetDb();
 //let DATA =  InitData();
 let [isFetching, setIsFetching] = React.useState(false);
 let [DATA, setData] = React.useState(InitData());
+let [stateFormPreviousMonth, setStateFromPreviousMonth] = React.useState(false);
+let start = "";
+let end = "";
+let state = false;
+
 /*const fetchData =()=>{
   setIsFetching(false);
 }
@@ -43,6 +50,8 @@ const onRefresh = ()=>{
   React.useEffect(()=>{
 
      db.transaction((tx)=>{
+     
+       //load data for month
        tx.executeSql("select date	,p_start, p_end	,sex, pill, note from day where strftime('%m', date) = ? and strftime('%Y', date) = ?",
        [day.format("MM"), day.format("yyyy")],
        (_, { rows:{ _array} }) =>{//callback function
@@ -55,14 +64,49 @@ const onRefresh = ()=>{
            //setItems();
        },
         (txObj, error) => {console.log('Error insert', error);/*HandleDbProblem(error)*/}
-       )
-     },
-     (error) => HandleDbProblem(error),
-     ()=>{setData(DATA);setIsFetching(true);}
-     );
-
+        );//
+        tx.executeSql("select date from day where p_start = 1 and date < ?  order by date desc limit 1 ",
+        [day.format("yyyy-MM-DD") ],
+        (tr, { rows:{ _array} })=> {  
+          console.log(" select date from day where p_start = 1 and date <");
+          _array.map(({date })=>
+          {
+            console.log(" start set to  "+start );
+          start = date;
+          })
+        },
+        (tr, error)=>{console.log("ERROR - last_start - "+ error);}      
+        );
+        tx.executeSql("select date from day where p_end = 1 and date <= ?  order by date desc limit 1 ",
+        [day.format("yyyy-MM-DD") ],
+        (tr, { rows:{ _array} })=> {  
+          console.log(" select date from day where p_start = 1 and date <");
+          _array.map(({date })=>
+          {
+            console.log(" end set to  "+start );
+          end = date;
+          })
+        },
+        (tr, error)=>{console.log("ERROR - last_start - "+ error);}      
+        );
+      },//
+      (error) => {console.log("ERROR - trnaaciton - "+ error);},//
+      ()=>{
+        console.log("db processes finished successfully");
+        if (start == "")
+        state = false;
+       else if (end != "" &&  moment(start, "yyyy-MM-DD") <=  moment(end, "yyyy-MM-DD" ))
+        state = false;
+       else 
+        state = ( moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') > day ||  moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') <  moment().startOf('day') &&  moment().startOf('day') == day.add(1,"months").add(-1,"days") ); 
+        
+       SetPeriodX(DATA, state); 
+        setStateFromPreviousMonth(false);setData(DATA);setIsFetching(true);
+      }      //
+       );//
+       
     });
- 
+    console.log(" pred retrun " );
 return (
     <View style={styles.background}>
         <View style={styles.titleBox}>
@@ -87,13 +131,13 @@ function RenderItem({item},navigation)
   if(item.active)
     return (
       <TouchableOpacity style={styles.labelBox} onPress={()=>navigation.navigate("DayEditor", {navigation:navigation, date:item.date, period:item.period, note:item.note, sex:item.sex, pill:item.pill})}>
-      {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active)}
+      {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active, item.future_period)}
       </TouchableOpacity>
     );
     else
     return (
       <View style={styles.labelBox}>
-      {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active)}
+      {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active, item.future_period)}
       </View>
     );
 }
@@ -140,7 +184,7 @@ let i = 0;
   {
 
    // console.log("startDay", startDay.month() , day.month() ,startDay.year() , day.year() );
-    dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:"", period:false, ovulation:false, active: startDay.month() == day.month() && startDay.year() == day.year()  });
+    dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:"", period:false, ovulation:false, active: startDay.month() == day.month() && startDay.year() == day.year(), future_period:false  });
     startDay = startDay.clone().add(1,"days");
   }
   console.log("init end");
@@ -161,7 +205,80 @@ function UpdateData(DATA, date	,p_start, p_end	,sex, pill, note)
 
     console.log("a je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") == new moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).sex);
   }
+}
+
+function SetPeriodX(DATA, period)
+{
+  console.log("SetPeriod");
+  if( moment(LastStart(), "yyyy-MM-DD")>  moment(LastEnd(), "yyyy-MM-DD"))
+  {
+    if ( moment(LastStart(), "yyyy-MM-DD").add(PeriodLength(), "days") > new moment().startOf("day"))
+      LastEnd( moment(LastStart(), "yyyy-MM-DD").add(PeriodLength(), "days").format("yyyy-MM-DD") );
+    else 
+      LastEnd(new moment().add(1,"days").startOf("day").format("yyyy-MM-DD") );
+  }
+
+  let now = new moment().startOf("day");
+  DATA.forEach(element => {
+    if (element.date <= now)
+    {
+      if(element.p_start == 1)
+        period = true;
+      element.period = period;
+      if (element.p_end == 1)
+        period = false;
+    }
+    if (element.date ==  moment (LastEnd(), "yyyy-MM-DD"))
+    { 
+      period = false;
+      element.period = false;
+    } 
+  }); 
+  console.log("SetPeriod2");
+  if ( day.clone().add(1,"months")>now)
+  {
+    console.log("SetFuturePeriod have to be set");
+    SetFuturePeriod(DATA)
+  }
   
+}
+
+function SetFuturePeriod(DATA)
+{
+  console.log("SetFuturePeriod");
+  let ls = moment(LastStart(),"yyyy-MM-DD").startOf("day") ;
+  if ( ls.add(CycleLength(),"days")<=new moment().startOf("day"))
+    ls = new moment().startOf("day").add(1,"days");
+  while(ls.clone().add(CycleLength(),"days") <= day)
+    ls = ls.clone().add(CycleLength(),"days")
+  let cycleDay = 0;
+  let lastDate = day.clone().add(1, "months");
+  
+  console.log("ls" + ls.format("yyyy-MM-DD")); 
+  console.log("lastDate" + day.format("yyyy-MM-DD"));
+  while (ls <= lastDate )
+  {
+    cycleDay++;
+    if (cycleDay <= PeriodLength())
+      setFutureData(DATA,ls, true, false);
+    if (cycleDay == OvulationStart())
+      setFutureData(DATA,ls, false,true);
+    if(cycleDay == CycleLength())
+      cycleDay= 0
+    ls = ls.clone().add(1,"days");
+  } 
+}
+function setFutureData(DATA,date, period, ovulation)
+{
+  console.log("setFutureData");
+  let a = DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD"));
+  if (a != null)
+  {
+    a.future_period = period;
+    a.ovulation = ovulation;
+
+    console.log("future_period je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).future_period);
+  }
 }
 
 function GetStartDay()

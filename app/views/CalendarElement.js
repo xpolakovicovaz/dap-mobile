@@ -5,9 +5,9 @@ import {StyleSheet, View, Text,  Image} from 'react-native'
 import colors from '../global/colors';
 
 
-function CalendarElement( date, period, ovulation, sex, pill, note, active) {
+function CalendarElement( date, period, ovulation, sex, pill, note, active, future_period) {
 
-    let border_color =!active? colors.grey_inactivee :( period ? colors.red : ( ovulation ? colors.green : colors.grey));
+    let border_color =!active? colors.grey_inactivee :( period||future_period ? colors.red : ( ovulation ? colors.green : colors.grey));
     
     if (date == null)
         return (

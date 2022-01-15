@@ -53,7 +53,9 @@ function openDatabase() {
 export const db = openDatabase();
 export function GetDb ()
 {
-  console.log("-----get db----" + (""+db));
+  let a = ""+db;
+  console.log(a);
+
   if ((""+db).includes("\"_running\": false,"))db = openDatabase();
   return db;
 }
@@ -67,7 +69,7 @@ export function InitSetting ()
           "create table if not exists sett (id text primary key not null,  value text);"
         );
         tx.executeSql(
-          "insert or ignore into sett (id, value ) values  ('pass', ''), ('cycle_length', '28'), ('period_length', '5'), ('ovulation_start', '12'), ('ovulation_length', '3');"
+          "insert or ignore into sett (id, value ) values  ('pass', ''), ('cycle_length', '20'), ('period_length', '5'), ('ovulation_start', '12'), ('ovulation_length', '3');"
         );
         tx.executeSql(
           "create table if not exists day (date	TEXT primary key NOT NULL,p_start	INTEGER DEFAULT 0, p_end	INTEGER DEFAULT 0,sex	INTEGER DEFAULT 0, pill	INTEGER DEFAULT 0, note	TEXT);"

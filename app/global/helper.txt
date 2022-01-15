@@ -8,6 +8,5 @@ inštalácia expo package
 -expo install expo-checkbox
 
 todo> 
-dayeditor - ukladanie
-logika do kalendara
-swipe screen do calendara
+predicted period
+checkboxy maju pri nacitani zly rozmer, po kliknuti sa opravi

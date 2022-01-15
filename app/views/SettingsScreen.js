@@ -104,7 +104,7 @@ function SaveSettings(db,navigation)
 }
 
 function SaveSetting(db, value,id, navigation)
-{ //   console.log("navigation" + navigation);
+{    console.log("SaveSetting" + navigation);
     db.transaction(
         (tx) => {
             tx.executeSql(
