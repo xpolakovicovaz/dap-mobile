@@ -7,7 +7,7 @@ import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart} fro
 import CalendarElement from './CalendarElement';
 
 const screenWidth = Dimensions.get("window").width;
-const boxsize = Math.floor((screenWidth-20)/7);
+const boxsize = Math.floor((screenWidth-32)/7);
 const marginwidth =Math.floor( (screenWidth-14-(boxsize*7))/2);
 const labels = [
   {id:"Po", label:"Po"},
@@ -113,7 +113,7 @@ const onRefresh = ()=>{
 return (
     <View style={styles.background}>
         <View style={styles.titleBox}>
-                <Text style={styles.titleText}>{GetMonthLabel(day)}</Text>
+                <Text style={styles.titleText} adjustsFontSizeToFit={true}>{GetMonthLabel(day)}</Text>
         </View>
         <View style={styles.gridBox}>
           <FlatList data={labels} renderItem={RenderLabel} numColumns={7} key={2} >
@@ -125,13 +125,13 @@ return (
         </View>
         <View style={styles.buttonBox}>
                 <TouchableOpacity style={styles.buttonS}  onPress={()=>{
-                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(-1,"months")});
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(-1,"months").startOf("month")});
                     }
                 }>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/left.png")} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonS} onPress={()=>{
-                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(1,"months")});
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(1,"months").startOf("month")});
                     }}>
                     <Image  style={styles.imageS} source={require("../assets/right.png")}  resizeMode="contain"/>
                 </TouchableOpacity>
@@ -146,7 +146,7 @@ function RenderItem({item},navigation)
 {
   if(item.active)
     return (
-      <TouchableOpacity style={styles.labelBox} onPress={()=>navigation.navigate("DayEditor", {navigation:navigation, date:item.date, period:item.period, note:item.note, sex:item.sex, pill:item.pill})}>
+      <TouchableOpacity style={styles.labelBox} onPress={()=>navigation.push("DayEditor", {navigation:navigation, date:item.date, period:item.period, note:item.note, sex:item.sex, pill:item.pill})}>
       {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active, item.future_period)}
       </TouchableOpacity>
     );
@@ -162,7 +162,7 @@ function RenderLabel({item})
 {
     return (
       <View style={styles.labelBox}>
-        <Text style={styles.labelText}>{item.label}</Text>
+        <Text style={styles.labelText} adjustsFontSizeToFit={true}>{item.label}</Text>
       </View>
       );
 }
@@ -237,13 +237,20 @@ function SetPeriodX(DATA, period)
     else 
       LastEnd(new moment().add(1,"days").startOf("day").format("yyyy-MM-DD") );
   }
+  let ovulation_counter = 0;
+  if (LastStart()<day)
+    ovulation_counter = day.diff(LastStart(), 'days')-1;
 
   let now = new moment().startOf("day");
+ 
   DATA.forEach(element => {
     if (element.date <= now)
     {
       if(element.p_start == 1)
+       {
         period = true;
+        ovulation_counter = 0;
+       }
       element.period = period;
       if (element.p_end == 1)
         period = false;
@@ -253,6 +260,9 @@ function SetPeriodX(DATA, period)
       period = false;
       element.period = false;
     } 
+    if (ovulation_counter == OvulationStart() && element.date <= moment (LastStart(), "yyyy-MM-DD") && element.period==false)
+    element.ovulation= true;
+    ovulation_counter ++;
   }); 
   //console.log("SetPeriod2");
   if ( day.clone().add(1,"months")>now)
@@ -265,9 +275,11 @@ function SetPeriodX(DATA, period)
 
 function SetFuturePeriod(DATA)
 {
-  console.log("SetFuturePeriod");
+  console.log("SetFuturePeriod  " +LastStart());
   let ls = moment(LastStart(),"yyyy-MM-DD").startOf("day") ;
-  if ( ls.add(CycleLength(),"days")<=new moment().startOf("day"))
+  
+  console.log("ls" + ls.format("yyyy-MM-DD")); 
+  if ( ls.clone().add(CycleLength(),"days")<=new moment().startOf("day"))
     ls = new moment().startOf("day").add(1,"days");
   while(ls.clone().add(CycleLength(),"days") <= day)
     ls = ls.clone().add(CycleLength(),"days")

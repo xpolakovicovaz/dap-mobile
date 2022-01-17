@@ -1,18 +1,13 @@
 import React from 'react';
-import {StyleSheet, View, Text, Pressable, Image, TextInput, Keyboard} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image, TextInput, Keyboard} from 'react-native';
 import moment from 'moment';
 
 import colors from '../global/colors';
-import {GetDb} from '../db/dbController';
+import {GetDb, LastEnd, LastStart} from '../db/dbController';
 import CheckBoxElement from './CheckBoxElement';
 
-let p_start = false;
-let p_end = false;
+
 let date = moment();
-let period = false;
-let sex = false;
-let pill =false;
-let note = "";
 
 function DayEditorScreen({route,navigation }) {
     console.log("editor.getdb");
@@ -55,20 +50,20 @@ function DayEditorScreen({route,navigation }) {
         <View style={styles.background}>
             <View style={styles.background}>
              <View style={styles.titleBox}>
-                <Text style={styles.titleText}>{date.format("DD.MM")}</Text>
+                <Text style={styles.titleText} adjustsFontSizeToFit={true} >{date.format("DD.MM")}</Text>
             </View>
             { !isKeyBoardVisible &&
                 <View style={styles.itemsListBox}>
                     <View style={styles.itemBox}>
-                        <Text style={styles.descriptionText}>Moje dni</Text>
+                        <Text style={styles.descriptionText} adjustsFontSizeToFit={true}>Moje dni</Text>
                         <CheckBoxElement  checked={period_value} onChange={onChangePeriod}/>
                     </View>
                     <View style={styles.itemBox}>
-                        <Text style={styles.descriptionText}>Tabletka</Text>
+                        <Text style={styles.descriptionText} adjustsFontSizeToFit={true}>Tabletka</Text>
                         <CheckBoxElement  checked={pill_value} onChange={onChangePill}/>
                     </View>
                     <View style={styles.itemBox}>
-                        <Text style={styles.descriptionText}>Sex</Text>
+                        <Text style={styles.descriptionText} adjustsFontSizeToFit={true}>Sex</Text>
                         <CheckBoxElement  checked={sex_value} onChange={onChangeSex}/>
                     </View>
                 </View>
@@ -80,16 +75,16 @@ function DayEditorScreen({route,navigation }) {
          
             { !isKeyBoardVisible &&
                 <View style={styles.buttonBox}>
-                    <Pressable style={styles.buttonS}  onPress={()=>{
+                    <TouchableOpacity style={styles.buttonS}  onPress={()=>{
                         cycle_length = 0;
-                        navigation.goBack();
+                        navigation.push("Calendar", {navigation:navigation, date:date.clone().startOf("month")});
                         }
                     }>
                         <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
-                    </Pressable>
-                    <Pressable style={styles.buttonS} onPress={()=>{SaveData(db, date, route.params.period,period_value, sex_value, pill_value, note_value,navigation)}}>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.buttonS} onPress={()=>{SaveData(db, date, route.params.period,period_value, sex_value, pill_value, note_value,navigation)}}>
                         <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
             }
         </View>
@@ -116,12 +111,21 @@ function SaveData(db, date, period_original, period_new, sex, pill, note,navigat
                 date.format("yyyy-MM-DD"), !period_original && period_new ? 1:0, period_original && !period_new ? 1:0 , sex?1:0, pill?1:0,note
                //date.format("yyyy-MM-DD"), true, false, sex, pill,note
             ],
-            (txObj, resultSet) => {console.log('db data res ------>');navigation.goBack();},
+            (txObj, resultSet) => {
+                console.log('db data res ------>');
+            if (!period_original && period_new && (date > moment( LastStart(),"yyyy-MM-DD")))
+                {
+                    LastStart(date.format("yyyy-MM-DD"));
+                    console.log("LastStart set to +++++++++++++++++++++++++++++++ done" + LastStart() + "----"+ date);
+                }
+                if (period_original && !period_new && (date > moment(LastEnd(),"yyyy-MM-DD"))) 
+                    LastEnd(date.format("yyyy-MM-DD"));navigation.push("Calendar", {navigation:navigation, date:date});
+                },
             (txObj, error) => {console.log('Error insert', error);HandleDbProblem(error)}
             );                         
         }
         );
-        console.log("SaveData done" );
+        console.log("SaveData done" + LastStart() + "-" + LastEnd());
 }
 
 function HandleDbProblem(ex)

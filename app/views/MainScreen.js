@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Text, Pressable, Image, Dimensions} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image, Dimensions} from 'react-native';
 import moment from 'moment'
 
 
@@ -69,17 +69,17 @@ console.log("loading - end")
     return (
         <View style={styles.background}>
             <View style={styles.textBox}>
-                <Text style={styles.smallText}>Ešte</Text>
-                <Text style={[styles.bigText,{color:inPeriod?colors.red:colors.grey}]}>{number}</Text>
-                <Text style={styles.smallText}>{GetDayText(number)}</Text>
+                <Text style={styles.smallText} adjustsFontSizeToFit={true}>Ešte</Text>
+                <Text style={[styles.bigText,{color:inPeriod?colors.red:colors.grey}]} adjustsFontSizeToFit={true}>{number}</Text>
+                <Text style={styles.smallText} adjustsFontSizeToFit={true}>{GetDayText(number)}</Text>
             </View>
             <View style={styles.buttonBox}>
-                <Pressable style={styles.buttonS} onPress={()=>navigation.navigate("Settings")}>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>navigation.navigate("Settings")}>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/gear.png")}/>
-                </Pressable>
-                <Pressable style={styles.buttonS} onPress={()=>navigation.navigate("Calendar", {navigation:navigation, date:today})}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>navigation.navigate("Calendar", {navigation:navigation, date:today})}>
                     <Image  style={styles.imageS} source={require("../assets/cal.png")}  resizeMode="contain"/>
-                </Pressable>
+                </TouchableOpacity>
             </View>
         </View>
     );

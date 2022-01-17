@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TextInput, StyleSheet, Pressable, Image, Alert } from 'react-native';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 
 
 import colors from '../global/colors';
@@ -12,81 +12,38 @@ let ovulation_start = 0;
 let period_length = 0;
 let saves = 0;
 const SettingsScreen = ({navigation}) => {
-//function SettingsScreen (props){
+
     const [items, setItems] = React.useState(null);
     let db = GetDb();
     console.log(db)
-/*
-    //if (period_length == 0)
-    { 
-        //console.log("loading db again ")
 
-                React.useEffect(()=>{
-                    db.transaction((tx)=>{
-                        tx.executeSql("select * from sett",//sql
-                            [], //sql args
-                            (_, { rows:{ _array} }) =>{//callback function
-                             //   console.log('db data res ------>', _array)
-                                _array.map(({id, value})=> 
-                                {
-                                    switch(id)
-                                    {
-                                        case "cycle_length":
-                                            cycle_length = value; break;
-                                        case "ovulation_start":
-                                            ovulation_start = value; break;
-                                        case "period_length":
-                                            period_length = value; break;
-                                    }
-                                });
-                                console.log("cycle_length " + cycle_length);
-                                console.log("ovulation_length " + ovulation_length);
-                                console.log("ovulation_start " + ovulation_start);
-                                console.log("period_length " + period_length);
-                                setItems();
-                            },
-                            error=>{//error function
-                                console.log("ERROR - openDatabase - "+ error);
-                                HandleDbProblem(error);
-                            }
-                        );            
-                    })
-                });
-                console.log("loading - end")
-    }
-  */  
-/*    
-  if (items === null ) {
-    return null;
-  }
-  */
     return (
         <View style={styles.background}>
             <View style={styles.itemsListBox}>
                 <View style={styles.itemBox}>
-                    <Text style={styles.description}>Dĺžka cyklu</Text>
+                    <Text style={styles.description} adjustsFontSizeToFit={true}>Dĺžka cyklu</Text>
                     <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>cycle_length= value.nativeEvent.text}>{CycleLength()}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
-                    <Text style={styles.description}>Trvanie</Text>
+                    <Text style={styles.description} adjustsFontSizeToFit={true}>Trvanie</Text>
                     <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>period_length= value.nativeEvent.text}>{PeriodLength()}</TextInput>
                 </View>
                 <View style={styles.itemBox}>
-                    <Text style={styles.description}>Ovulácia</Text>
+                    <Text style={styles.description} adjustsFontSizeToFit={true}>Ovulácia</Text>
                     <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_start= value.nativeEvent.text}>{OvulationStart()}</TextInput>
                 </View>
             </View>
             <View style={styles.buttonBox}>
-                <Pressable style={styles.buttonS}  onPress={()=>{
+                <TouchableOpacity style={styles.buttonS}  onPress={()=>{
                     cycle_length = 0;
                     navigation.navigate("Home");
                     }
                 }>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
-                </Pressable>
-                <Pressable style={styles.buttonS} onPress={()=>{SaveSettings(db,navigation)}}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>{SaveSettings(db,navigation)}}>
                     <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
-                </Pressable>
+                </TouchableOpacity>
             </View>
         </View>
     );

@@ -18,7 +18,7 @@ function CalendarElement( date, period, ovulation, sex, pill, note, active, futu
         return (
             <View style={[styles.background, {borderColor:border_color}] } >
                 <View style={styles.textBox}>
-                    <Text style={[styles.smallText, {color:border_color}]}>{date.date()}</Text>
+                    <Text style={[styles.smallText, {color:border_color}]} adjustsFontSizeToFit={true}>{date.date()}</Text>
                 </View>
                 {active && pill && <Image  style={styles.imageS }  bottom="0%" left="0%" source={require("../assets/pill.png")}  resizeMode="contain"/>} 
                 {active && note.trim()!="" && <Image  style={styles.imageS} bottom="0%" right="0%" source={require("../assets/note.png")}  resizeMode="contain"/>}
