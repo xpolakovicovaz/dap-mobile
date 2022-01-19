@@ -103,7 +103,7 @@ const onRefresh = ()=>{
        else 
         state = ( moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') > day ||  moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') <  moment().startOf('day') &&  moment().startOf('day') == day.add(1,"months").add(-1,"days") ); 
         
-       SetPeriodX(DATA, state); 
+       SetPeriod(DATA, state); 
       /*  setStateFromPreviousMonth(false);*/setData(DATA);setIsFetching(true);
       }      //
        );//
@@ -233,9 +233,10 @@ function UpdateData(DATA, date	,p_start, p_end	,sex, pill, note)
   }
 }
 
-function SetPeriodX(DATA, period)
+function SetPeriod(DATA, period)
 {
   console.log("SetPeriod");
+  let display_ovulation = false;
   if( moment(LastStart(), "yyyy-MM-DD")>  moment(LastEnd(), "yyyy-MM-DD"))
   {
     if ( moment(LastStart(), "yyyy-MM-DD").add(PeriodLength(), "days") > new moment().startOf("day"))
@@ -245,7 +246,10 @@ function SetPeriodX(DATA, period)
   }
   let ovulation_counter = 0;
   if (LastStart()<day)
-    ovulation_counter = day.diff(LastStart(), 'days')-1;
+    {
+      ovulation_counter = day.diff(LastStart(), 'days')-1;
+      display_ovulation = true;
+    }
 
   let now = new moment().startOf("day");
  
@@ -256,6 +260,7 @@ function SetPeriodX(DATA, period)
        {
         period = true;
         ovulation_counter = 0;
+        display_ovulation = true;
        }
       element.period = period;
       if (element.p_end == 1)
@@ -266,8 +271,10 @@ function SetPeriodX(DATA, period)
       period = false;
       element.period = false;
     } 
-    if (ovulation_counter == OvulationStart() && element.date <= moment (LastStart(), "yyyy-MM-DD") && element.period==false)
-    element.ovulation= true;
+    if (display_ovulation && ovulation_counter == OvulationStart() && element.date <= moment (LastStart(), "yyyy-MM-DD") && element.period==false)
+      {
+        element.ovulation= true;
+      }
     ovulation_counter ++;
   }); 
   //console.log("SetPeriod2");
@@ -371,6 +378,7 @@ const styles = StyleSheet.create({
       
   },
   gridBox:{
+    flex:1,    
     margin:marginwidth
 },
 buttonBox:{
