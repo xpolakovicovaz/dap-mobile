@@ -1,19 +1,18 @@
 import React from 'react';
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 
 import colors from '../global/colors';
-import {GetDb, CycleLength, PeriodLength,OvulationStart} from '../db/dbController';
+import {GetDb, CycleLength, PeriodLength,OvulationStart,HandleDbProblem} from '../db/dbController';
 
-
-let cycle_length = 0;
-let ovulation_length = 0;
-let ovulation_start = 0;
-let period_length = 0;
 let saves = 0;
+
 const SettingsScreen = ({navigation}) => {
 
-    const [items, setItems] = React.useState(null);
+    let [cycle_length, onChangeCycleLength] = React.useState(CycleLength());
+    let [period_length, onChangePeriodLength] = React.useState(PeriodLength());
+    let [ovulation_start, onChangeOvulationStart] = React.useState(OvulationStart());
+  
     let db = GetDb();
     console.log(db)
 
@@ -22,15 +21,15 @@ const SettingsScreen = ({navigation}) => {
             <View style={styles.itemsListBox}>
                 <View style={styles.itemBox}>
                     <Text style={styles.description} adjustsFontSizeToFit={true}>Dĺžka cyklu</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>cycle_length= value.nativeEvent.text}>{CycleLength()}</TextInput>
+                    <TextInput style={styles.userValue} keyboardType="numeric"  value={cycle_length.toString()} onChangeText={onChangeCycleLength}/>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description} adjustsFontSizeToFit={true}>Trvanie</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>period_length= value.nativeEvent.text}>{PeriodLength()}</TextInput>
+                    <TextInput style={styles.userValue} keyboardType="numeric"  value={period_length.toString()} onChangeText={onChangePeriodLength}/>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={styles.description} adjustsFontSizeToFit={true}>Ovulácia</Text>
-                    <TextInput style={styles.userValue} keyboardType="numeric" onSubmitEditing={(value)=>ovulation_start= value.nativeEvent.text}>{OvulationStart()}</TextInput>
+                    <TextInput style={styles.userValue} keyboardType="numeric"  value={ovulation_start.toString()} onChangeText={onChangeOvulationStart}/>
                 </View>
             </View>
             <View style={styles.buttonBox}>
@@ -41,7 +40,7 @@ const SettingsScreen = ({navigation}) => {
                 }>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonS} onPress={()=>{SaveSettings(db,navigation)}}>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>{SaveSettings(db,navigation, cycle_length,period_length,ovulation_start)}}>
                     <Image  style={styles.imageS} source={require("../assets/ok.png")}  resizeMode="contain"/>
                 </TouchableOpacity>
             </View>
@@ -49,7 +48,7 @@ const SettingsScreen = ({navigation}) => {
     );
 }
 
-function SaveSettings(db,navigation)
+function SaveSettings(db,navigation, cycle_length,period_length,ovulation_start)
 {
   
    SaveSetting(db,cycle_length,"cycle_length",navigation );
@@ -95,17 +94,11 @@ saves++;
 if (saves == 3 )
     {
         saves = 0;
-        navigation.navigate("Home");
+        navigation.push("Home",  {navigation:navigation});
     }
 }
 
-function HandleDbProblem(ex)
-{
-    //console.log("HandleDbProblem - without call");
-    Alert.alert("Niečo sa pokazilo", ""+ex, [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-}
+
 
 const styles = StyleSheet.create({
     background:{

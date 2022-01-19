@@ -1,9 +1,9 @@
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, FlatList} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image, Dimensions, FlatList, Alert} from 'react-native';
 import moment from 'moment'
 
 import colors from '../global/colors';
-import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart} from '../db/dbController';
+import { GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart, HandleDbProblem} from '../db/dbController';
 import CalendarElement from './CalendarElement';
 
 const screenWidth = Dimensions.get("window").width;
@@ -66,7 +66,7 @@ const onRefresh = ()=>{
 
            //setItems();
        },
-        (txObj, error) => {console.log('Error insert', error);/*HandleDbProblem(error)*/}
+        (txObj, error) => {HandleDbProblem(error);}
         );//
         tx.executeSql("select date from day where p_start = 1 and date < ?  order by date desc limit 1 ",
         [day.format("yyyy-MM-DD") ],
@@ -78,7 +78,7 @@ const onRefresh = ()=>{
           start = date;
           })
         },
-        (tr, error)=>{console.log("ERROR - last_start - "+ error);}      
+        (tr, error)=>{HandleDbProblem(error);}      
         );
         tx.executeSql("select date from day where p_end = 1 and date <= ?  order by date desc limit 1 ",
         [day.format("yyyy-MM-DD") ],
@@ -90,10 +90,10 @@ const onRefresh = ()=>{
           end = date;
           })
         },
-        (tr, error)=>{console.log("ERROR - last_start - "+ error);}      
+        (tr, error)=>{HandleDbProblem(error);}      
         );
       },//
-      (error) => {console.log("ERROR - trnaaciton - "+ error);},//
+      (error) => {HandleDbProblem(error);},//
       ()=>{
         console.log("db processes finished successfully");
         if (start == "")
@@ -140,13 +140,19 @@ return (
 )
 }
 
-
+function OnCalendarElementPressed(navigation, item)
+{
+  if (item.date > new moment().startOf("day"))
+    Alert.alert("Nedokážeš zmeniť budúcnosť");
+  else
+    navigation.push("DayEditor", {navigation:navigation, date:item.date, period:item.period, note:item.note, sex:item.sex, pill:item.pill});
+}
 
 function RenderItem({item},navigation)
 {
   if(item.active)
     return (
-      <TouchableOpacity style={styles.labelBox} onPress={()=>navigation.push("DayEditor", {navigation:navigation, date:item.date, period:item.period, note:item.note, sex:item.sex, pill:item.pill})}>
+      <TouchableOpacity style={styles.labelBox} onPress={()=>OnCalendarElementPressed(navigation, item)}>
       {CalendarElement(item.date, item.period,item.ovulation, item.sex, item.pill, item.note, item.active, item.future_period)}
       </TouchableOpacity>
     );

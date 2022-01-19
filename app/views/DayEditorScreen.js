@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, Image, TextInput, Keyboard} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image, TextInput, Keyboard,HandleDbProblem} from 'react-native';
 import moment from 'moment';
 
 import colors from '../global/colors';
@@ -121,19 +121,11 @@ function SaveData(db, date, period_original, period_new, sex, pill, note,navigat
                 if (period_original && !period_new && (date > moment(LastEnd(),"yyyy-MM-DD"))) 
                     LastEnd(date.format("yyyy-MM-DD"));navigation.push("Calendar", {navigation:navigation, date:date});
                 },
-            (txObj, error) => {console.log('Error insert', error);HandleDbProblem(error)}
+            (txObj, error) => {HandleDbProblem(error);}
             );                         
         }
         );
         console.log("SaveData done" + LastStart() + "-" + LastEnd());
-}
-
-function HandleDbProblem(ex)
-{
-    console.log("HandleDbProblem - without call");
-    Alert.alert("Niečo sa pokazilo", ""+ex, [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
 }
 
 

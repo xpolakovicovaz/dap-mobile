@@ -4,7 +4,7 @@ import moment from 'moment'
 
 
 import colors from '../global/colors';
-import {InitSetting, GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart} from '../db/dbController';
+import {InitSetting, GetDb, LastEnd, LastStart,PeriodLength, CycleLength,OvulationStart, HandleDbProblem} from '../db/dbController';
 
 let inPeriod = false;
 let loaded = false;
@@ -29,11 +29,11 @@ const MainScreen= ({navigation})=> {
                     switch(id)
                     {
                         case "cycle_length":
-                            cycle_length = value; CycleLength(value); break;
+                            cycle_length = value; CycleLength(+value); break;
                         case "ovulation_start":
-                            ovulation_start = value; OvulationStart(value);break;
+                            ovulation_start = value; OvulationStart(+value);break;
                         case "period_length":
-                            period_length = value;PeriodLength(value); break;
+                            period_length = value;PeriodLength(+value); break;
                     }
                 });
                 console.log("cycle_length " + cycle_length);
@@ -42,20 +42,19 @@ const MainScreen= ({navigation})=> {
                 //setItems();
             },
             error=>{//error function
-                console.log("ERROR - openDatabase kkk - "+ error);
-                //HandleDbProblem(error);
+                HandleDbProblem(error);
             },
   
         );  
         tx.executeSql("select date from day where p_start = 1 order by date desc limit 1",
         [],
         (tr, { rows:{ _array} })=> { _array.map(({date})=>{console.log("success - last_start - " +date);LastStart(date)})},
-        (tr, error)=>{console.log("ERROR - last_start - "+ error);}
+        (tr, error)=>{HandleDbProblem(error);}
         );    
         tx.executeSql("select date from day where p_end = 1 order by date desc limit 1",
         [],
         (tr, {rows:{_array}})=> {_array.map(({date})=>{console.log("success - last end - " + date);LastEnd(date)})},
-        (tr, error)=>{console.log("ERROR - last_start - "+ error);}
+        (tr, error)=>{HandleDbProblem(error);}
         );      
     },          
     (error) => HandleDbProblem(error),

@@ -8,5 +8,5 @@ inštalácia expo package
 -expo install expo-checkbox
 
 todo> 
-ovulation for curent month
-refresh after period set
+
+remove navigation panel

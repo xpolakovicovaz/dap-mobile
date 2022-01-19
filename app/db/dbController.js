@@ -1,6 +1,6 @@
 
 import * as SQLite from "expo-sqlite";
-
+import {Alert} from 'react-native';
 
 
 
@@ -102,4 +102,10 @@ export function InitSetting ()
     console.log("something happend");
 }
 
-
+export function HandleDbProblem(ex)
+{
+  console.log('HandleDbProblem in db controller') 
+    Alert.alert("Niečo sa pokazilo", ""+ex, [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+}
