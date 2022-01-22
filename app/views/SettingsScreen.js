@@ -14,7 +14,6 @@ const SettingsScreen = ({navigation}) => {
     let [ovulation_start, onChangeOvulationStart] = React.useState(OvulationStart());
   
     let db = GetDb();
-    console.log(db)
 
     return (
         <View style={styles.background}>
@@ -60,7 +59,7 @@ function SaveSettings(db,navigation, cycle_length,period_length,ovulation_start)
 }
 
 function SaveSetting(db, value,id, navigation)
-{    console.log("SaveSetting" + navigation);
+{    
     db.transaction(
         (tx) => {
             tx.executeSql(
@@ -80,7 +79,7 @@ function SaveSetting(db, value,id, navigation)
                            PeriodLength(value); break;
                    }
                },
-            (txObj, error) => {console.log('Error insert', error); saves = 0;HandleDbProblem(error)}
+            (txObj, error) => { saves = 0;HandleDbProblem(error)}
             );                         
         }
         )
@@ -88,8 +87,6 @@ function SaveSetting(db, value,id, navigation)
 
 function IncreaseSave(navigation)
 {
-    //console.log("IncreaseSave - without call");
-    //console.log("navigation" + navigation);
 saves++;
 if (saves == 3 )
     {

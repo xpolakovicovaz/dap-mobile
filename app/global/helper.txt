@@ -8,5 +8,4 @@ inštalácia expo package
 -expo install expo-checkbox
 
 todo> 
-add home button to callendar
 remove logs

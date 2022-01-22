@@ -11,11 +11,9 @@ let loaded = false;
 
 const MainScreen= ({navigation})=> {
     const [items, setItems] = React.useState(null);
-    console.log("main screen - open ");
     let number = GetRemindingDays();
     let db = GetDb();
- //   if (!loaded)
-{
+
    let a =  InitSetting();
 
    React.useEffect(()=>{
@@ -23,7 +21,6 @@ const MainScreen= ({navigation})=> {
         tx.executeSql("select * from sett",//sql
             [], //sql args
             (_, { rows:{ _array} }) =>{//callback function
-             //   console.log('db data res ------>', _array)
                 _array.map(({id, value})=> 
                 {
                     switch(id)
@@ -36,10 +33,6 @@ const MainScreen= ({navigation})=> {
                             period_length = value;PeriodLength(+value); break;
                     }
                 });
-                console.log("cycle_length " + cycle_length);
-                console.log("ovulation_start " + ovulation_start);
-                console.log("period_length " + period_length);
-                //setItems();
             },
             error=>{//error function
                 HandleDbProblem(error);
@@ -48,22 +41,19 @@ const MainScreen= ({navigation})=> {
         );  
         tx.executeSql("select date from day where p_start = 1 order by date desc limit 1",
         [],
-        (tr, { rows:{ _array} })=> { _array.map(({date})=>{console.log("success - last_start - " +date);LastStart(date)})},
+        (tr, { rows:{ _array} })=> { _array.map(({date})=>{LastStart(date)})},
         (tr, error)=>{HandleDbProblem(error);}
         );    
         tx.executeSql("select date from day where p_end = 1 order by date desc limit 1",
         [],
-        (tr, {rows:{_array}})=> {_array.map(({date})=>{console.log("success - last end - " + date);LastEnd(date)})},
+        (tr, {rows:{_array}})=> {_array.map(({date})=>{LastEnd(date)})},
         (tr, error)=>{HandleDbProblem(error);}
         );      
     },          
     (error) => HandleDbProblem(error),
     ()=>{loaded = true;setItems();})
 });
-console.log("loading - end")
-}
 
-    console.log("MainScreen start");
     let today = new moment().startOf("month");
     return (
         <View style={styles.background}>
@@ -103,21 +93,14 @@ function GetRemindingDays()
         if (moment(LastStart(),"yyyy-MM-DD" , false)< moment(LastEnd(),"yyyy-MM-DD" , false) && LastEnd() != "2999-01-01")
         {
             d = moment(LastStart(),'yyyy-MM-DD', false).add(CycleLength(), "day").diff(moment(), "days") ;
-            console.log(" CycleLength je " +CycleLength());
             inPeriod = false;
         }
         else
         {
             d = moment(LastStart(), 'yyyy-MM-DD', false).add(PeriodLength(), "day").diff(moment(), "day");
-            console.log(" PeriodLength je " +PeriodLength());
-            console.log(" expected end j " +moment(LastStart(), 'yyyy-MM-DD', false).add(PeriodLength(), "day").format("yyyy-MM-DD"));
-            console.log(" now je " +moment().format("yyyy-MM-DD"));
             inPeriod = true;
         }
     }
-    console.log("last start je " +LastStart());
-    console.log("last end je " + LastEnd());
-    console.log("d jeeeeeeeee " + d);
     return d;
 } 
 

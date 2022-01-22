@@ -1,19 +1,16 @@
 import React from 'react';
 import { StyleSheet,TouchableOpacity, View , Image} from 'react-native';
 
-
 import colors from '../global/colors';
-
-//let size = 100;
 
 export default  function CheckBoxElement({checked, onChange}) {
 
     let [size, setSize] = React.useState(100);
 
       return (
-        <View style={styles.empty}  onLayout={(event) => {setSize( getSize(event.nativeEvent.layout));onChange(checked) ;console.log(size);}}>
+        <View style={styles.empty}  onLayout={(event) => {setSize( getSize(event.nativeEvent.layout));onChange(checked) ;}}>
   
-            <TouchableOpacity  style={[styles.background,{width:size, height:size}]}   onPress={()=>{console.log(size);onChange(!checked)}}>
+            <TouchableOpacity  style={[styles.background,{width:size, height:size}]}   onPress={()=>{onChange(!checked)}}>
                
            {checked && <Image style={[{width:Math.floor(size*0.9), height:Math.floor(size*0.9)}]} resizeMode="stretch" source={require("../assets/ok.png")} />}
                 
@@ -25,7 +22,6 @@ export default  function CheckBoxElement({checked, onChange}) {
 
 function getSize(layout){
     const {x, y, width, height} = layout;
-    console.log("size " + width + " , "+height);
     return Math.floor(Math.min(width, height)*0.9);
 };
 

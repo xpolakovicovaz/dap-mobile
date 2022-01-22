@@ -10,18 +10,16 @@ import CheckBoxElement from './CheckBoxElement';
 let date = moment();
 
 function DayEditorScreen({route,navigation }) {
-    console.log("editor.getdb");
+
     let db = GetDb();  
-    console.log("db " + db);
     date = route.params.date;
 
     React.useEffect(()=>{
 
 
         const keyboadrDidShowListener = Keyboard.addListener('keyboardDidShow', ()=>{setKeyboardVisible(true)});
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>{setKeyboardVisible(false)});
+        const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', ()=>{setKeyboardVisible(false)});
 
-    
         return ()=>{
             keyboadrDidShowListener.remove();
             keyboardDidHideListener.remove();
@@ -34,18 +32,9 @@ function DayEditorScreen({route,navigation }) {
     let [pill_value, onChangePill] = React.useState(route.params.pill);
     let [period_value, onChangePeriod] = React.useState(route.params.period);
     let [note_value, onChangeNote] = React.useState(route.params.note);
-
-
-   
        
     let [isKeyBoardVisible,setKeyboardVisible ] = React.useState(false);
-//let isKeyBoardVisible = false;
 
- 
-
-    //sex_value = sex;
-  
-    // onChange={(value)=>{p_start = !period && value.nativeEvent.value ? true:false;p_end = period && !value.nativeEvent.value ? true:false }}/>
     return (
         <View style={styles.background}>
             <View style={styles.background}>
@@ -95,28 +84,18 @@ function DayEditorScreen({route,navigation }) {
 
 function SaveData(db, date, period_original, period_new, sex, pill, note,navigation)
 {  
-      console.log("SaveData");
-    //let db = GetDb();  
-    console.log( date.format("yyyy-MM-DD"));
-    console.log( !period_original && period_new ? 1:0);
-    console.log( period_original && !period_new ? 1:0);
-    console.log( sex?1:0);
-    console.log( pill?1:0);
-    console.log( note);
+
     db.transaction(
         (tx) => {
             tx.executeSql(
             "insert or replace into  day (date,p_start, p_end,sex, pill, note	) values(?,?,?,?,?,?)  ",
             [
                 date.format("yyyy-MM-DD"), !period_original && period_new ? 1:0, period_original && !period_new ? 1:0 , sex?1:0, pill?1:0,note
-               //date.format("yyyy-MM-DD"), true, false, sex, pill,note
             ],
             (txObj, resultSet) => {
-                console.log('db data res ------>');
-            if (!period_original && period_new && (date > moment( LastStart(),"yyyy-MM-DD")))
+               if (!period_original && period_new && (date > moment( LastStart(),"yyyy-MM-DD")))
                 {
                     LastStart(date.format("yyyy-MM-DD"));
-                    console.log("LastStart set to +++++++++++++++++++++++++++++++ done" + LastStart() + "----"+ date);
                 }
                 if (period_original && !period_new && (date > moment(LastEnd(),"yyyy-MM-DD"))) 
                     LastEnd(date.format("yyyy-MM-DD"));navigation.push("Calendar", {navigation:navigation, date:date});
@@ -124,8 +103,7 @@ function SaveData(db, date, period_original, period_new, sex, pill, note,navigat
             (txObj, error) => {HandleDbProblem(error);}
             );                         
         }
-        );
-        console.log("SaveData done" + LastStart() + "-" + LastEnd());
+    );
 }
 
 

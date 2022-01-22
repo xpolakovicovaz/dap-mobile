@@ -45,7 +45,6 @@ export function OvulationStart (value)
 
 function openDatabase() {
 
-  console.log("---------------open db-----------------------");
   const db = SQLite.openDatabase("dbdap.db");
 
   return db;
@@ -53,15 +52,11 @@ function openDatabase() {
 export const db = openDatabase();
 export function GetDb ()
 {
-  let a = ""+db;
-  console.log(a);
-
   if ((""+db).includes("\"_running\": false,"))db = openDatabase();
   return db;
 }
 export function InitSetting ()
 {
-    //console.log("in init settings aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
     db.transaction(
       (tx) => {
@@ -69,43 +64,45 @@ export function InitSetting ()
           "create table if not exists sett (id text primary key not null,  value text);"
         );
         tx.executeSql(
-          "insert or ignore into sett (id, value ) values  ('pass', ''), ('cycle_length', '20'), ('period_length', '5'), ('ovulation_start', '12'), ('ovulation_length', '3');"
+          "insert or ignore into sett (id, value ) values  ('pass', ''), ('cycle_length', '28'), ('period_length', '5'), ('ovulation_start', '12'), ('ovulation_length', '3');"
         );
         tx.executeSql(
           "create table if not exists day (date	TEXT primary key NOT NULL,p_start	INTEGER DEFAULT 0, p_end	INTEGER DEFAULT 0,sex	INTEGER DEFAULT 0, pill	INTEGER DEFAULT 0, note	TEXT);"
         ); 
-        tx.executeSql(/* -- for debug only -- */
+        /*
+        tx.executeSql(// -- for debug only -- 
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2021-10-29",1,0,0,0, "klokan"]
         );
-        /*tx.executeSql(/* -- for debug only -- */
-        /*  "delete from day",
+        tx.executeSql(// -- for debug only -- 
+          "delete from day",
           []
-        );*/
-        tx.executeSql(/* -- for debug only -- */
+        );
+        tx.executeSql(// -- for debug only -- 
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2022-01-02",1,0,0,1, "klokan"]
         );
-        tx.executeSql(/* -- for debug only -- */
+        tx.executeSql(// -- for debug only -- 
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2022-01-04",0,1,1,1, ""]
         );
-        tx.executeSql("select * from sett", [], (_, { rows }) =>{
+        */
+       /* tx.executeSql("select * from sett", [], (_, { rows }) =>{
           console.log(JSON.stringify(rows));
         }
-        );
+        );*/
       },
       error=>{
-        console.log("ERROR - openDatabase - "+ error)},
+        HandleDbProblem(error)},
       null
     );
-    console.log("something happend");
+    //console.log("something happend");
 }
 
 export function HandleDbProblem(ex)
 {
-  console.log('HandleDbProblem in db controller') 
+  
     Alert.alert("Niečo sa pokazilo", ""+ex, [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK' },
       ]);
 }

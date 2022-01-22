@@ -17,44 +17,26 @@ const labels = [
   {id:"Pt", label:"Pt"},
   {id:"So", label:"So"},
   {id:"Ne", label:"Ne"}
-];/*
-let DATA = [
-  ];
-  */
+];
 let day = moment();
 
 let db = GetDb();
 
 const CalendarScreen = ({ route, navigation }) => {
 
-  console.log("**************************calendar screeeen********************************");
   day = route.params.date;
-//let db=GetDb();
-//let DATA =  InitData();
 let [isFetching, setIsFetching] = React.useState(false);
 let [DATA, setData] = React.useState(InitData());
-//let [stateFormPreviousMonth, setStateFromPreviousMonth] = React.useState(false);
 let start = "";
 let end = "";
 let state = false;
 
-console.log("isFetching"+isFetching);
 
-/*const fetchData =()=>{
-  setIsFetching(false);
-}
-const onRefresh = ()=>{
-  setIsFetching(true);
-  fetchData();
-}
-*/
-//DATA =  InitData();
   React.useEffect(()=>{
 
      db.transaction((tx)=>{
-      console.log('volanie db--------------------------------------------------------------------');
-
-       //load data for month
+      
+      //load data for month
        tx.executeSql("select date	,p_start, p_end	,sex, pill, note from day where strftime('%m', date) = ? and strftime('%Y', date) = ?",
        [day.format("MM"), day.format("yyyy")],
        (_, { rows:{ _array} }) =>{//callback function
@@ -71,10 +53,8 @@ const onRefresh = ()=>{
         tx.executeSql("select date from day where p_start = 1 and date < ?  order by date desc limit 1 ",
         [day.format("yyyy-MM-DD") ],
         (tr, { rows:{ _array} })=> {  
-          console.log(" select date from day where p_start = 1 and date <");
           _array.map(({date })=>
           {
-            console.log(" start set to  "+start );
           start = date;
           })
         },
@@ -83,10 +63,8 @@ const onRefresh = ()=>{
         tx.executeSql("select date from day where p_end = 1 and date <= ?  order by date desc limit 1 ",
         [day.format("yyyy-MM-DD") ],
         (tr, { rows:{ _array} })=> {  
-          console.log(" select date from day where p_start = 1 and date <");
           _array.map(({date })=>
           {
-            console.log(" end set to  "+start );
           end = date;
           })
         },
@@ -95,8 +73,7 @@ const onRefresh = ()=>{
       },//
       (error) => {HandleDbProblem(error);},//
       ()=>{
-        console.log("db processes finished successfully");
-        if (start == "")
+          if (start == "")
         state = false;
        else if (end != "" &&  moment(start, "yyyy-MM-DD") <=  moment(end, "yyyy-MM-DD" ))
         state = false;
@@ -104,12 +81,12 @@ const onRefresh = ()=>{
         state = ( moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') > day ||  moment(start, "yyyy-MM-DD").add(PeriodLength(),'days') <  moment().startOf('day') &&  moment().startOf('day') == day.add(1,"months").add(-1,"days") ); 
         
        SetPeriod(DATA, state); 
-      /*  setStateFromPreviousMonth(false);*/setData(DATA);setIsFetching(true);
-      }      //
-       );//
+       setData(DATA);setIsFetching(true);
+      }      
+       );
        
     });
-    console.log(" pred retrun " );
+   
 return (
     <View style={styles.background}>
         <View style={styles.titleBox}>
@@ -207,28 +184,21 @@ function GetMonthLabel(date)
 
 
 function InitData() {
-  console.log("init start");
+
   let startDay = GetStartDay();
   
-  console.log("startDay" + startDay.format("yyyy-MM-DD"));
   let i = 0;
   var dates = [];
   for (i=0;i<42;i++)
   {
-
-   // console.log("startDay", startDay.month() , day.month() ,startDay.year() , day.year() );
     dates.push({id:i, date: startDay,p_start:false, p_end:false	,sex:false, pill:false, note:"", period:false, ovulation:false, active: startDay.month() == day.month() && startDay.year() == day.year(), future_period:false  });
     startDay = startDay.clone().add(1,"days");
   }
-  console.log("init end");
-    
-  console.log("enday" + startDay.format("yyyy-MM-DD"));
   return dates;
 };
 
 function UpdateData(DATA, date	,p_start, p_end	,sex, pill, note)
 {
-  console.log("UpdateData" + DATA.length);
   let a = DATA.find(x=>x.date.format("yyyy-MM-DD") == new moment(date,"yyyy-MM-DD").format("yyyy-MM-DD"));
   if (a != null)
   {
@@ -238,13 +208,11 @@ function UpdateData(DATA, date	,p_start, p_end	,sex, pill, note)
     a.p_end = p_end==1;
     a.p_start = p_start==1;
 
-    console.log("a je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") == new moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).sex);
   }
 }
 
 function SetPeriod(DATA, period)
 {
-  console.log("SetPeriod");
   let display_ovulation = false;
   if( moment(LastStart(), "yyyy-MM-DD")>  moment(LastEnd(), "yyyy-MM-DD"))
   {
@@ -286,10 +254,8 @@ function SetPeriod(DATA, period)
       }
     ovulation_counter ++;
   }); 
-  //console.log("SetPeriod2");
   if ( day.clone().add(1,"months")>now)
   {
-    //console.log("SetFuturePeriod have to be set");
     SetFuturePeriod(DATA)
   }
   
@@ -297,10 +263,8 @@ function SetPeriod(DATA, period)
 
 function SetFuturePeriod(DATA)
 {
-  console.log("SetFuturePeriod  " +LastStart());
   let ls = moment(LastStart(),"yyyy-MM-DD").startOf("day") ;
   
-  console.log("ls" + ls.format("yyyy-MM-DD")); 
   if ( ls.clone().add(CycleLength(),"days")<=new moment().startOf("day"))
     ls = new moment().startOf("day").add(1,"days");
   while(ls.clone().add(CycleLength(),"days") <= day)
@@ -308,8 +272,6 @@ function SetFuturePeriod(DATA)
   let cycleDay = 0;
   let lastDate = day.clone().add(1, "months");
   
-  console.log("ls" + ls.format("yyyy-MM-DD")); 
-  console.log("lastDate" + day.format("yyyy-MM-DD"));
   while (ls <= lastDate )
   {
     cycleDay++;
@@ -324,20 +286,16 @@ function SetFuturePeriod(DATA)
 }
 function setFutureData(DATA,date, period, ovulation)
 {
-  //console.log("setFutureData");
   let a = DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD"));
   if (a != null)
   {
     a.future_period = period;
     a.ovulation = ovulation;
-
-    //console.log("future_period je"+ DATA.find(x=>x.date.format("yyyy-MM-DD") ==  moment(date,"yyyy-MM-DD").format("yyyy-MM-DD")).future_period);
   }
 }
 
 function GetStartDay()
 {
-  console.log("day is " + day.format("yyyy-MM-DD"));
   if (day.day==1)
     return day;
   else
