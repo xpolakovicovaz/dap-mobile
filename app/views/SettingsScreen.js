@@ -35,7 +35,7 @@ const SettingsScreen = ({navigation}) => {
             <View style={styles.buttonBox}>
                 <TouchableOpacity style={styles.buttonS}  onPress={()=>{
                     cycle_length = 0;
-                    navigation.navigate("Home");
+                    navigation.push("Home");
                     }
                 }>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/cancel.png")} />

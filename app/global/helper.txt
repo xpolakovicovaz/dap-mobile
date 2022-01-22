@@ -8,5 +8,5 @@ inštalácia expo package
 -expo install expo-checkbox
 
 todo> 
-
-remove navigation panel
+add home button to callendar
+remove logs

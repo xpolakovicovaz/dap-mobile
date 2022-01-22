@@ -14,7 +14,7 @@ const db = openDatabase("app/db/dbdap.db");
 function App() {
   return (
     <NavigationContainer>
-    <Stackq.Navigator initialRouteName="Home">
+    <Stackq.Navigator initialRouteName="Home"  screenOptions={{ headerShown: false  }}>
       <Stackq.Screen name="Home" component={MainScreen}/>
       <Stackq.Screen name="Settings" component={SettingsScreen}/>
       <Stackq.Screen name="Calendar" component={CalendarScreen}/>

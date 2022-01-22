@@ -12,7 +12,7 @@ export function LastStart (value)
   return lastStart
 
 }
-let lastEnd = "2999-01-01";
+let lastEnd = "1999-01-01";
 export function LastEnd (value)
 {
   if (value!=null)
@@ -78,10 +78,10 @@ export function InitSetting ()
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2021-10-29",1,0,0,0, "klokan"]
         );
-        tx.executeSql(/* -- for debug only -- */
-          "delete from day",
+        /*tx.executeSql(/* -- for debug only -- */
+        /*  "delete from day",
           []
-        );
+        );*/
         tx.executeSql(/* -- for debug only -- */
           "insert or ignore into  day (date	,p_start, p_end	,sex, pill, note	) values (?,?,?,?,?,?);",
           ["2022-01-02",1,0,0,1, "klokan"]

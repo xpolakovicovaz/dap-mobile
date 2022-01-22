@@ -76,7 +76,7 @@ console.log("loading - end")
                 <TouchableOpacity style={styles.buttonS} onPress={()=>navigation.navigate("Settings")}>
                     <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/gear.png")}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonS} onPress={()=>navigation.navigate("Calendar", {navigation:navigation, date:today})}>
+                <TouchableOpacity style={styles.buttonS} onPress={()=>navigation.push("Calendar", {navigation:navigation, date:today})}>
                     <Image  style={styles.imageS} source={require("../assets/cal.png")}  resizeMode="contain"/>
                 </TouchableOpacity>
             </View>

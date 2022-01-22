@@ -113,7 +113,17 @@ const onRefresh = ()=>{
 return (
     <View style={styles.background}>
         <View style={styles.titleBox}>
+                 <TouchableOpacity style={styles.buttonH}  onPress={()=>{
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(-1,"months").startOf("month")});
+                    }}>
+                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/left.png")} />
+                </TouchableOpacity>
                 <Text style={styles.titleText} adjustsFontSizeToFit={true}>{GetMonthLabel(day)}</Text>
+                <TouchableOpacity style={styles.buttonH} onPress={()=>{
+                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(1,"months").startOf("month")});
+                    }}>
+                    <Image  style={styles.imageS} source={require("../assets/right.png")}  resizeMode="contain"/>
+                </TouchableOpacity>
         </View>
         <View style={styles.gridBox}>
           <FlatList data={labels} renderItem={RenderLabel} numColumns={7} key={2} >
@@ -125,15 +135,14 @@ return (
         </View>
         <View style={styles.buttonBox}>
                 <TouchableOpacity style={styles.buttonS}  onPress={()=>{
-                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(-1,"months").startOf("month")});
-                    }
-                }>
-                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/left.png")} />
+                    navigation.navigate("Settings");
+                    }}>
+                    <Image  style={styles.imageS} resizeMode="contain" source={require("../assets/gear.png")} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonS} onPress={()=>{
-                    navigation.push("Calendar", {navigation:navigation, date:day.clone().add(1,"months").startOf("month")});
+                    navigation.push("Home", {navigation:navigation});
                     }}>
-                    <Image  style={styles.imageS} source={require("../assets/right.png")}  resizeMode="contain"/>
+                    <Image  style={styles.imageS} source={require("../assets/home.png")}  resizeMode="contain"/>
                 </TouchableOpacity>
             </View>
     </View>
@@ -353,10 +362,12 @@ const styles = StyleSheet.create({
 
     },
     titleBox:{
-        height:"15%",
-        margin:1,
+        margin:1, 
+        height:70,
+        flexDirection:"row",
         alignItems:"center",
-        justifyContent:"center"
+        justifyContent:"center",
+        marginTop:20
     },
     titleText:{
         fontSize:25,
@@ -379,7 +390,8 @@ const styles = StyleSheet.create({
   },
   gridBox:{
     flex:1,    
-    margin:marginwidth
+    margin:marginwidth,
+    justifyContent:'center'
 },
 buttonBox:{
   height:70,
@@ -392,6 +404,12 @@ buttonS:{
   backgroundColor:colors.background,
   borderWidth:1,
   borderColor:colors.grey,
+  alignItems:"center"
+},
+buttonH:{
+  width:70,
+  height:"100%",
+  backgroundColor:colors.background,
   alignItems:"center"
 },
 imageS:{
