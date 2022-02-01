@@ -19,7 +19,9 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+    "android": {    
+      "package": "com.xpolakovicovaz.dap",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/icon.png",
         "backgroundColor": "#FFFFFF"
