@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, View, Text,  Image} from 'react-native'
-
+import {StyleSheet, View, Text,  Image, MaskedViewComponent} from 'react-native'
+import moment from 'moment'
 
 import colors from '../global/colors';
 
@@ -8,15 +8,16 @@ import colors from '../global/colors';
 function CalendarElement( date, period, ovulation, sex, pill, note, active, future_period) {
 
     let border_color =!active? colors.grey_inactivee :( period||future_period ? colors.red : ( ovulation ? colors.green : colors.grey));
-    
+
     if (date == null)
         return (
             <View style={styles.background}></View>
         )
     else 
-    
+    {
+        let back_color = date.format("yyyy-MM-DD")== new moment().format("yyyy-MM-DD")  ? colors.grey_important : colors.background ;
         return (
-            <View style={[styles.background, {borderColor:border_color}] } >
+            <View style={[styles.background, {borderColor:border_color}, {backgroundColor:back_color}] } >
                 <View style={styles.textBox}>
                     <Text style={[styles.smallText, {color:border_color}]} adjustsFontSizeToFit={true}>{date.date()}</Text>
                 </View>
@@ -26,14 +27,13 @@ function CalendarElement( date, period, ovulation, sex, pill, note, active, futu
                 
             </View>
         );
-  
+    }
 }
 
 const styles = StyleSheet.create({
 background:{
     flex:1,
     backgroundColor:colors.background,
-    color:colors.grey,
     borderWidth:1,
     borderColor:colors.grey,
     margin:1,
